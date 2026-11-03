@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>财务建模实操课</title>
+<meta name="description" content="一步一步学财务建模：下载数据、清洗数据、从零搭建三表模型、选择并搭建 DCF/可比公司/LBO 等分析方法。配套 Excel 练习。">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&family=Noto+Serif+SC:wght@600;700&display=swap">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<div class="app">
+  <aside class="side" id="side" aria-label="课程目录">
+    <a class="brand" href="#">
+      <span class="brand-mark">fx</span>
+      <span><span class="brand-t">财务建模实操课</span><br><span class="brand-s">从下载数据到估值，一步一步来</span></span>
+    </a>
+    <div class="prog">
+      <div class="prog-row"><span>学习进度 <span id="progTxt"></span></span><span id="progPct"></span></div>
+      <div class="prog-bar"><i id="progBar"></i></div>
+    </div>
+    <div class="search"><input id="q" type="search" placeholder="搜索：折旧、WACC、不平…" aria-label="搜索课程内容" autocomplete="off"></div>
+    <nav class="nav" id="nav"></nav>
+    <div id="searchRes" hidden></div>
+    <div class="side-foot">
+      <button type="button" class="btn-ghost" id="themeBtn">主题：跟随系统</button>
+      <button type="button" class="btn-ghost" id="resetBtn">清空学习进度</button>
+    </div>
+  </aside>
+  <div class="scrim" id="scrim"></div>
+  <div class="main">
+    <header class="topbar">
+      <button type="button" class="menu-btn" id="menuBtn" aria-label="打开目录">目录</button>
+      <span class="topbar-t" id="topTitle">财务建模实操课</span>
+    </header>
+    <main id="view"></main>
+  </div>
+</div>
+
+<script src="js/core.js"></script>
+<script src="js/case-data.js"></script>
+<script src="js/content/00-start.js"></script>
+<script src="js/content/01-data.js"></script>
+<script src="js/content/02-clean.js"></script>
+<script src="js/content/03-history.js"></script>
+<script src="js/content/04-build.js"></script>
+<script src="js/content/05-methods.js"></script>
+<script src="js/content/06-case.js"></script>
+<script src="js/content/07-tools.js"></script>
+<script src="js/content/08-ref.js"></script>
+<script src="js/tools/dcf.js"></script>
+<script src="js/tools/selector.js"></script>
+<script src="js/tools/linkage.js"></script>
+<script src="js/tools/balance.js"></script>
+<script src="js/tools/lbo.js"></script>
+<script src="js/tools/case.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>
