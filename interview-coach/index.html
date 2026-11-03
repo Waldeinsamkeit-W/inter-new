@@ -1,0 +1,644 @@
+<title>面试陪练台</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@500;700&family=Noto+Sans+SC:wght@400;500;700&family=JetBrains+Mono:wght@400;600&display=swap">
+<style>
+/* Layout: 左侧题库栏 + 右侧作答工作台；窄屏上下堆叠。主角是题目本身（衬线大字），其余信息退后。 */
+:root {
+  --bg: #f3f5f8;
+  --surface: #ffffff;
+  --ink: #1b2233;
+  --muted: #5d6679;
+  --line: #d9dee8;
+  --accent: #2d44a3;
+  --accent-soft: #e6eafa;
+  --mark: #fff1c7;
+  --mark-ink: #6b4e00;
+  --good: #1f7a4d;
+  --bad: #a3321f;
+  --font-display: "Noto Serif SC", "Songti SC", "STSong", serif;
+  --font-body: "Noto Sans SC", "PingFang SC", "Microsoft YaHei", system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
+  --radius: 10px;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #11151e; --surface: #181d29; --ink: #e5e8f0; --muted: #9aa3b6; --line: #2a3142;
+    --accent: #93a5f5; --accent-soft: #232b48; --mark: #3e3313; --mark-ink: #f3d78a;
+    --good: #6fcf9c; --bad: #f08f7c; color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #11151e; --surface: #181d29; --ink: #e5e8f0; --muted: #9aa3b6; --line: #2a3142;
+  --accent: #93a5f5; --accent-soft: #232b48; --mark: #3e3313; --mark-ink: #f3d78a;
+  --good: #6fcf9c; --bad: #f08f7c; color-scheme: dark;
+}
+* { box-sizing: border-box; }
+body {
+  background: var(--bg); color: var(--ink); font-family: var(--font-body);
+  font-size: 15px; line-height: 1.7;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+  padding-block: 20px 48px;
+}
+.wrap { max-width: 1180px; margin: 0 auto; display: grid; grid-template-columns: minmax(0, 1fr); gap: 20px; }
+header { display: grid; gap: 12px; }
+.brand { display: flex; flex-wrap: wrap; align-items: baseline; gap: 6px 16px; }
+h1 { font-family: var(--font-display); font-size: 26px; margin: 0; letter-spacing: .02em; }
+.brand p { margin: 0; color: var(--muted); font-size: 13.5px; }
+.dirs { display: flex; flex-wrap: wrap; gap: 8px; }
+.dir {
+  border: 1px solid var(--line); background: var(--surface); color: var(--ink);
+  border-radius: 999px; padding: 6px 14px; font: inherit; font-size: 14px; cursor: pointer;
+}
+.dir[aria-pressed="true"] { background: var(--accent); border-color: var(--accent); color: var(--surface); }
+.dir:focus-visible, button:focus-visible, select:focus-visible, textarea:focus-visible, input:focus-visible, summary:focus-visible {
+  outline: 2px solid var(--accent); outline-offset: 2px;
+}
+.target { color: var(--muted); font-size: 13.5px; margin: 0; }
+
+.grid { display: grid; grid-template-columns: 320px minmax(0, 1fr); gap: 20px; align-items: start; }
+@media (max-width: 860px) { .grid { grid-template-columns: minmax(0, 1fr); } .work { order: -1; } .qlist { max-height: 300px; } }
+
+.panel { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); }
+.bank { padding: 14px; display: grid; gap: 12px; min-width: 0; }
+.label { font-size: 12px; letter-spacing: .08em; color: var(--muted); font-weight: 500; margin: 0; }
+.qlist { list-style: none; margin: 0; padding: 0; display: grid; gap: 2px; max-height: 460px; overflow-y: auto; }
+.qlist button {
+  width: 100%; text-align: left; background: none; border: 0; color: var(--ink); font: inherit;
+  font-size: 14px; line-height: 1.55; padding: 7px 8px; border-radius: 6px; cursor: pointer;
+  display: grid; grid-template-columns: 1.6em minmax(0, 1fr); gap: 4px;
+}
+.qlist button:hover { background: var(--accent-soft); }
+.qlist button[aria-current="true"] { background: var(--accent-soft); color: var(--accent); font-weight: 500; }
+.qlist .n { font-family: var(--font-mono); font-size: 12px; color: var(--muted); padding-top: 2px; }
+.qlist .done::after { content: " · 已存"; color: var(--good); font-size: 12px; font-weight: 400; }
+.custom { display: grid; gap: 8px; }
+textarea, input[type="text"], select {
+  width: 100%; font: inherit; color: var(--ink); background: var(--bg);
+  border: 1px solid var(--line); border-radius: 8px; padding: 8px 10px;
+}
+textarea { resize: vertical; line-height: 1.7; }
+.row { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+.btn {
+  font: inherit; font-size: 14px; border-radius: 8px; padding: 7px 14px; cursor: pointer;
+  border: 1px solid var(--line); background: var(--surface); color: var(--ink);
+}
+.btn.primary { background: var(--accent); border-color: var(--accent); color: var(--surface); font-weight: 500; }
+.btn:disabled { opacity: .5; cursor: not-allowed; }
+.btn.small { font-size: 13px; padding: 4px 10px; }
+
+.work { padding: 20px; display: grid; gap: 16px; min-width: 0; }
+.qhead { display: grid; gap: 6px; }
+.question { font-family: var(--font-display); font-weight: 700; font-size: 22px; line-height: 1.5; margin: 0; text-wrap: balance; }
+.hint { color: var(--muted); font-size: 13.5px; margin: 0; }
+.opts { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 10px; }
+.opts label { display: grid; gap: 4px; font-size: 12.5px; color: var(--muted); }
+.answer-head { display: flex; justify-content: space-between; align-items: center; gap: 8px; flex-wrap: wrap; }
+.timer { font-family: var(--font-mono); font-size: 13px; color: var(--muted); font-variant-numeric: tabular-nums; }
+.timer.over { color: var(--bad); }
+.status { font-size: 13px; color: var(--muted); min-height: 1.4em; margin: 0; }
+.status.err { color: var(--bad); }
+
+.out { border-top: 1px solid var(--line); padding-top: 16px; display: grid; gap: 10px; min-width: 0; }
+.out[hidden] { display: none !important; }
+.md { overflow-wrap: anywhere; }
+.md h3 { font-family: var(--font-display); font-size: 17px; margin: 18px 0 6px; color: var(--accent); }
+.md h3:first-child { margin-top: 0; }
+.md p { margin: 0 0 10px; max-width: 68ch; }
+.md ul { margin: 0 0 10px; padding-left: 1.3em; max-width: 68ch; }
+.md li { margin-bottom: 4px; }
+.md strong { font-weight: 700; }
+.md mark { background: var(--mark); color: var(--mark-ink); border-radius: 3px; padding: 0 3px; }
+.sample-tag { font-size: 12px; color: var(--mark-ink); background: var(--mark); border-radius: 4px; padding: 1px 6px; }
+
+details.panel > summary { cursor: pointer; padding: 14px 18px; font-weight: 500; list-style: none; display: flex; justify-content: space-between; gap: 8px; }
+details.panel > summary::-webkit-details-marker { display: none; }
+details.panel > summary::after { content: "展开"; color: var(--muted); font-size: 13px; font-weight: 400; }
+details.panel[open] > summary::after { content: "收起"; }
+.dbody { padding: 0 18px 18px; display: grid; gap: 14px; min-width: 0; }
+.bg-block { font-size: 13.5px; white-space: pre-wrap; background: var(--bg); border-radius: 8px; padding: 12px; max-height: 320px; overflow-y: auto; overflow-wrap: anywhere; }
+.works { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 10px; }
+.wcard { border: 1px solid var(--line); border-radius: 8px; padding: 10px 12px; font-size: 13.5px; min-width: 0; }
+.wcard b { display: block; margin-bottom: 2px; }
+.wcard span { color: var(--muted); font-size: 12.5px; }
+
+.saved { display: grid; gap: 10px; }
+.saved-item { border: 1px solid var(--line); border-radius: 8px; padding: 10px 12px; min-width: 0; }
+.saved-item summary { cursor: pointer; display: grid; gap: 2px; }
+.saved-item .meta { font-size: 12px; color: var(--muted); font-family: var(--font-mono); }
+.empty { color: var(--muted); font-size: 13.5px; margin: 0; }
+footer { color: var(--muted); font-size: 12.5px; }
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; animation: none !important; } }
+</style>
+
+<div class="wrap">
+  <header>
+    <div class="brand">
+      <h1>面试陪练台</h1>
+      <p>选方向 → 选题或出题 → 先自己答 → 看参考答案与点评。答案只基于你的简历和作品。</p>
+    </div>
+    <div class="dirs" id="dirs" role="group" aria-label="应聘方向"></div>
+    <p class="target" id="target"></p>
+  </header>
+
+  <div class="grid">
+    <aside class="panel bank">
+      <p class="label">本方向题库</p>
+      <ol class="qlist" id="qlist"></ol>
+      <div class="custom">
+        <p class="label">自己输入问题</p>
+        <textarea id="customQ" rows="2" placeholder="例如：你怎么看光伏行业的出清节奏？"></textarea>
+        <div class="row">
+          <button class="btn small" id="useCustom">用这道题</button>
+          <button class="btn small" id="genQ">让面试官出一道新题</button>
+        </div>
+      </div>
+    </aside>
+
+    <section class="panel work">
+      <div class="qhead">
+        <p class="label" id="qlabel">当前问题</p>
+        <p class="question" id="question"></p>
+        <p class="hint" id="qintent"></p>
+      </div>
+
+      <div class="opts">
+        <label for="lengthSel">回答时长
+          <select id="lengthSel">
+            <option value="1">1 分钟（约 250 字）</option>
+            <option value="2" selected>2 分钟（约 500 字）</option>
+            <option value="3">3 分钟（约 750 字）</option>
+          </select>
+        </label>
+        <label for="materialSel">引用作品原文
+          <select id="materialSel"></select>
+        </label>
+        <label for="langSel">语言
+          <select id="langSel">
+            <option value="zh" selected>中文</option>
+            <option value="en">English</option>
+          </select>
+        </label>
+      </div>
+
+      <div class="answer-head">
+        <label class="label" for="myAnswer">我的回答（可选，先自己答再看参考，效果最好）</label>
+        <span class="timer" id="timer">00:00</span>
+      </div>
+      <textarea id="myAnswer" rows="6" placeholder="把你会怎么说写下来，或者用语音输入后粘贴进来。"></textarea>
+
+      <div class="row">
+        <button class="btn primary" id="btnAnswer">生成参考答案</button>
+        <button class="btn" id="btnReview">点评我的回答</button>
+        <button class="btn" id="btnStop" hidden>停止</button>
+        <button class="btn" id="btnCopyPrompt">复制提示词</button>
+      </div>
+      <p class="status" id="status"></p>
+
+      <div class="out" id="out" hidden>
+        <div class="answer-head">
+          <p class="label" id="outLabel">参考答案</p>
+          <div class="row">
+            <button class="btn small" id="btnCopy">复制</button>
+            <button class="btn small" id="btnSave">存入答题手册</button>
+          </div>
+        </div>
+        <div class="md" id="outBody"></div>
+      </div>
+    </section>
+  </div>
+
+  <details class="panel" id="savedPanel">
+    <summary>答题手册 <span id="savedCount"></span></summary>
+    <div class="dbody">
+      <p class="hint">保存在这个浏览器里，换设备或清除浏览器数据后会丢失，重要的请复制出去另存。</p>
+      <div class="saved" id="saved"></div>
+    </div>
+  </details>
+
+  <details class="panel">
+    <summary>生成答案时使用的背景资料</summary>
+    <div class="dbody">
+      <div>
+        <p class="label">本方向定位</p>
+        <div class="bg-block" id="bgPos"></div>
+      </div>
+      <div>
+        <p class="label">经历与技能</p>
+        <div class="bg-block" id="bgCommon"></div>
+      </div>
+      <div>
+        <p class="label">研究作品</p>
+        <div class="works" id="bgWorks"></div>
+      </div>
+      <div>
+        <label class="label" for="extra">补充说明（只存在本浏览器，会一并发给 Claude）</label>
+        <textarea id="extra" rows="4" placeholder="例如：审计项目里不能提客户名称；我最想突出的是 FDD 迁移能力；某个数字以哪份报告为准……"></textarea>
+      </div>
+    </div>
+  </details>
+
+  <footer>
+    参考答案用于练习和梳理思路，请用自己的话讲出来。所有内容基于你提供的材料，数字以原报告为准。
+  </footer>
+</div>
+
+<script>
+(() => {
+  const $ = (id) => document.getElementById(id);
+  const store = {
+    get(k, d) { try { const v = localStorage.getItem(k); return v == null ? d : JSON.parse(v); } catch { return d; } },
+    set(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch {} }
+  };
+
+  // 题目关键词 → 自动引用的作品
+  const KEYWORDS = [
+    [/汇川|联合动力|300124|工控|伺服|SOTP|先例交易|贝思特/i, "w01"],
+    [/具身|人形|宇树|优必选|L1|L2|L3|L4|分层定价|FA/i, "w02"],
+    [/擎朗/i, "w02"],
+    [/擎朗|敏感性模型/i, "w03"],
+    [/备忘录|CVC|头部标的/i, "w04"],
+    [/光伏|隆基|通威|晶科|硅料|信用比较|信用排序/i, "w05"],
+    [/云深处|四足|战略配售|绝影|山猫/i, "w06"]
+  ];
+
+  let P = null;           // profile
+  let dir = null;         // current direction
+  let question = "";
+  let qIntent = "";
+  let sample = null;
+  let ctl = null;
+  let lastOut = { kind: "", text: "" };
+  let timerStart = 0, timerId = 0;
+  const textCache = {};
+  let saved = store.get("ivp.saved", []);
+  let generated = store.get("ivp.generated", {});
+
+  // ---------- 渲染 ----------
+  function esc(s) { return s.replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c])); }
+  function inline(s) {
+    return esc(s)
+      .replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>")
+      .replace(/【(待补充|需确认)[:：]?([^】]*)】/g, (m, a, b) => `<mark>【${a}${b ? "：" + b : ""}】</mark>`);
+  }
+  function md(text) {
+    const lines = text.replace(/\r/g, "").split("\n");
+    let html = "", inList = false, para = [];
+    const flush = () => { if (para.length) { html += `<p>${inline(para.join(" "))}</p>`; para = []; } };
+    const closeList = () => { if (inList) { html += "</ul>"; inList = false; } };
+    for (const raw of lines) {
+      const line = raw.trim();
+      if (!line) { flush(); closeList(); continue; }
+      let m;
+      if ((m = line.match(/^#{1,4}\s+(.*)$/))) { flush(); closeList(); html += `<h3>${inline(m[1])}</h3>`; continue; }
+      if ((m = line.match(/^(?:[-*•]|\d+[.、)])\s+(.*)$/))) { flush(); if (!inList) { html += "<ul>"; inList = true; } html += `<li>${inline(m[1])}</li>`; continue; }
+      closeList(); para.push(line);
+    }
+    flush(); closeList();
+    return html;
+  }
+
+  function renderDirs() {
+    $("dirs").innerHTML = "";
+    for (const d of P.directions) {
+      const b = document.createElement("button");
+      b.className = "dir"; b.type = "button"; b.textContent = d.label;
+      b.setAttribute("aria-pressed", String(d.id === dir.id));
+      b.onclick = () => selectDir(d.id);
+      $("dirs").append(b);
+    }
+    $("target").textContent = "应聘：" + dir.target;
+  }
+
+  function bankFor(d) { return [...d.questions, ...(generated[d.id] || [])]; }
+  function isSaved(q) { return saved.some((s) => s.dir === dir.id && s.q === q); }
+
+  function renderBank() {
+    const ol = $("qlist"); ol.innerHTML = "";
+    bankFor(dir).forEach((q, i) => {
+      const li = document.createElement("li");
+      const b = document.createElement("button");
+      b.type = "button";
+      b.setAttribute("aria-current", String(q === question));
+      b.innerHTML = `<span class="n">${String(i + 1).padStart(2, "0")}</span><span class="${isSaved(q) ? "done" : ""}"></span>`;
+      b.lastChild.textContent = q;
+      b.onclick = () => setQuestion(q, "");
+      li.append(b); ol.append(li);
+    });
+  }
+
+  function renderBackground() {
+    $("bgPos").textContent = dir.positioning + "\n\n考察重点：" + dir.focus;
+    $("bgCommon").textContent = P.common;
+    $("bgWorks").innerHTML = "";
+    for (const w of P.works) {
+      const c = document.createElement("div"); c.className = "wcard";
+      const b = document.createElement("b"); b.textContent = w.title;
+      const s = document.createElement("span"); s.textContent = (w.files && w.files.length ? "已附原文 · " : "仅摘要 · ") + w.summary.split("\n").length + " 条要点";
+      c.append(b, s); $("bgWorks").append(c);
+    }
+    const sel = $("materialSel"); const keep = sel.value || "auto"; sel.innerHTML = "";
+    const opt = (v, t) => { const o = document.createElement("option"); o.value = v; o.textContent = t; sel.append(o); };
+    opt("auto", "自动（按题目关键词）"); opt("none", "只用摘要");
+    for (const w of P.works) if (w.files && w.files.length) opt(w.id, w.title.length > 20 ? w.title.slice(0, 20) + "…" : w.title);
+    sel.value = [...sel.options].some((o) => o.value === keep) ? keep : "auto";
+    $("extra").value = store.get("ivp.extra", "");
+  }
+
+  function renderSaved() {
+    const box = $("saved"); box.innerHTML = "";
+    $("savedCount").textContent = saved.length ? `（${saved.length}）` : "";
+    if (!saved.length) { box.innerHTML = '<p class="empty">还没有保存的答案。生成参考答案后点「存入答题手册」。</p>'; return; }
+    for (const s of [...saved].reverse()) {
+      const d = document.createElement("details"); d.className = "saved-item";
+      const sum = document.createElement("summary");
+      const t = document.createElement("span"); t.textContent = s.q;
+      const meta = document.createElement("span"); meta.className = "meta";
+      const dl = (P.directions.find((x) => x.id === s.dir) || {}).label || s.dir;
+      meta.textContent = `${dl} · ${s.kind === "review" ? "点评" : "参考答案"} · ${s.time}`;
+      sum.append(t, meta);
+      const body = document.createElement("div"); body.className = "md"; body.innerHTML = md(s.text);
+      const row = document.createElement("div"); row.className = "row";
+      const del = document.createElement("button"); del.className = "btn small"; del.textContent = "删除";
+      del.onclick = () => {
+        if (del.dataset.confirm) { saved = saved.filter((x) => x !== s); store.set("ivp.saved", saved); renderSaved(); renderBank(); }
+        else { del.dataset.confirm = "1"; del.textContent = "再点一次确认删除"; }
+      };
+      const cp = document.createElement("button"); cp.className = "btn small"; cp.textContent = "复制";
+      cp.onclick = () => copy(s.text, cp);
+      row.append(cp, del);
+      d.append(sum, body, row); box.append(d);
+    }
+  }
+
+  // ---------- 状态 ----------
+  function selectDir(id) {
+    dir = P.directions.find((d) => d.id === id) || P.directions[0];
+    store.set("ivp.dir", dir.id);
+    renderDirs(); renderBackground();
+    setQuestion(bankFor(dir)[0], "");
+  }
+
+  function setQuestion(q, intent) {
+    question = q; qIntent = intent || "";
+    $("question").textContent = q;
+    $("qintent").textContent = qIntent ? "考察意图：" + qIntent : "";
+    $("myAnswer").value = "";
+    $("out").hidden = true; $("status").textContent = ""; $("status").className = "status";
+    resetTimer(); renderBank();
+  }
+
+  function resetTimer() { clearInterval(timerId); timerId = 0; timerStart = 0; $("timer").textContent = "00:00"; $("timer").classList.remove("over"); }
+  $("myAnswer").addEventListener("input", () => {
+    if (timerId) return;
+    timerStart = Date.now();
+    timerId = setInterval(() => {
+      const s = Math.floor((Date.now() - timerStart) / 1000);
+      $("timer").textContent = `${String(Math.floor(s / 60)).padStart(2, "0")}:${String(s % 60).padStart(2, "0")}`;
+      $("timer").classList.toggle("over", s > Number($("lengthSel").value) * 60);
+    }, 1000);
+  });
+  $("extra").addEventListener("input", () => store.set("ivp.extra", $("extra").value));
+
+  // ---------- 材料与提示词 ----------
+  function pickWorks(q) {
+    const v = $("materialSel").value;
+    if (v === "none") return [];
+    if (v !== "auto") return [v];
+    const ids = [];
+    for (const [re, id] of KEYWORDS) if (re.test(q) && !ids.includes(id)) ids.push(id);
+    return ids.slice(0, 2);
+  }
+  async function loadText(path) {
+    if (textCache[path] != null) return textCache[path];
+    try { const r = await fetch(path); textCache[path] = r.ok ? await r.text() : ""; } catch { textCache[path] = ""; }
+    return textCache[path];
+  }
+  async function materialsFor(q) {
+    const out = [];
+    for (const id of pickWorks(q)) {
+      const w = P.works.find((x) => x.id === id);
+      if (!w || !w.files || !w.files.length) continue;
+      const t = await loadText(w.files[0]);
+      if (t) out.push(`【原文：${w.title}】\n${t.slice(0, 40000)}`);
+    }
+    return out.join("\n\n");
+  }
+
+  function context(materials) {
+    const works = P.works.map((w) => `### ${w.title}\n${w.summary}`).join("\n\n");
+    const extra = $("extra").value.trim();
+    return [
+      `# 应聘方向\n${dir.target}`,
+      `# 候选人在该方向的定位\n${dir.positioning}`,
+      `# 该岗位面试通常考察\n${dir.focus}`,
+      `# 候选人经历与技能\n${P.common}`,
+      `# 候选人的独立研究作品（摘要）\n${works}`,
+      materials ? `# 作品原文（供引用细节）\n${materials}` : "",
+      extra ? `# 候选人补充说明\n${extra}` : ""
+    ].filter(Boolean).join("\n\n");
+  }
+
+  function lengthWords() { return { 1: "约 250 字", 2: "约 500 字", 3: "约 750 字" }[$("lengthSel").value]; }
+  const RULES = `规则：
+1. 只用上面资料里出现的经历、数字和结论，绝不编造；资料里没有、但回答需要的细节，用【待补充：要补什么】标出，让候选人自己填。
+2. 审计工作里的客户信息受保密义务约束，不要写客户名称或非公开数据，只讲方法和类型。
+3. 作品里的数字要和资料一致；同一作品有新旧两版时，以较新的版本为准，必要时说明变化及原因。
+4. 挑和这道题、这个岗位最相关的一两段经历讲深讲透，不要把简历从头复述一遍。`;
+
+  async function answerPrompt() {
+    const lang = $("langSel").value === "en" ? "参考回答用英文写，其余部分用中文。" : "全部用中文。";
+    return `你是一位熟悉中国金融行业招聘的资深面试教练。下面是候选人的背景资料。请针对面试问题，替候选人写一份可以直接练习的参考回答。
+
+${context(await materialsFor(question))}
+
+# 面试问题
+${question}${qIntent ? `\n（考察意图：${qIntent}）` : ""}
+
+${RULES}
+5. 参考回答用第一人称、口语化，${lengthWords()}；先一句话给出结论或主线，再分两到三点展开，每点落到具体经历、方法或数字，最后一句收回到这个岗位。
+6. ${lang}
+
+# 输出格式（Markdown，只用 ## 标题、- 列表和 **加粗**）
+## 参考回答
+（正文）
+## 答题思路
+- 3 到 4 条：面试官想考什么，为什么这样组织
+## 可能的追问
+- 3 条追问，每条后面用一句话给出应对要点
+## 30 秒精简版
+（两三句话）`;
+  }
+
+  async function reviewPrompt(mine) {
+    return `你是一位熟悉中国金融行业招聘的资深面试官。下面是候选人的背景资料、面试问题和候选人自己的回答。请像真实面试官一样严格但具体地点评，并给出改进版。
+
+${context(await materialsFor(question + mine))}
+
+# 面试问题
+${question}${qIntent ? `\n（考察意图：${qIntent}）` : ""}
+
+# 候选人的回答
+${mine}
+
+${RULES}
+5. 点评要具体到句子或要点，指出哪里逻辑断了、哪里空泛、漏了资料里哪条更有说服力的经历或数字、哪里有事实或数字与资料不符。
+6. 改进版保留候选人原来的主线和口吻，${lengthWords()}。全部用中文。
+
+# 输出格式（Markdown，只用 ## 标题、- 列表和 **加粗**）
+## 总体评价
+（一句话结论 + 评分：逻辑结构 x/10、内容匹配 x/10、具体性 x/10、表达 x/10）
+## 做得好的地方
+- 2 到 3 条
+## 需要改进
+- 3 到 5 条，每条写清问题和怎么改
+## 改进后的回答
+（正文）
+## 面试官可能的追问
+- 2 到 3 条`;
+  }
+
+  async function questionPrompt() {
+    const asked = bankFor(dir).map((q) => "- " + q).join("\n");
+    return `你是一位${dir.target}岗位的面试官。根据下面的候选人资料，出一道新的面试题。题目要贴合这个岗位真实会问的内容，可以是专业知识题、案例题、行为题，或针对候选人某个作品的深挖追问。不要和已有题目重复或高度相似。
+
+${context("")}
+
+# 已有题目
+${asked}
+
+只回复一个 JSON 对象：{"question": "题目", "intent": "一句话说明考察意图"}`;
+  }
+
+  // ---------- 调用 Claude ----------
+  function setBusy(b, label) {
+    for (const id of ["btnAnswer", "btnReview", "genQ", "useCustom"]) $(id).disabled = b;
+    $("btnStop").hidden = !b;
+    $("status").className = "status";
+    $("status").textContent = b ? label : "";
+  }
+  function errText(e) {
+    const c = e && e.code;
+    return ({
+      not_granted: "你没有允许这个页面使用 Claude。可以点「复制提示词」，粘贴到 Claude 对话里使用。",
+      sampling_disabled: "当前账号无法在页面里使用 Claude。可以点「复制提示词」，粘贴到 Claude 对话里使用。",
+      rate_limited: "调用太频繁或达到用量上限，请稍后再试。",
+      session_expired: "登录已过期，请重新登录 claude.ai 后刷新页面。",
+      prompt_too_large: "资料太长了。把「引用作品原文」改成「只用摘要」再试。",
+      refused: "这次请求没有得到回答，换个问法再试。",
+      invalid_json: "出题结果格式不对，请再点一次。",
+      empty_completion: "没有生成内容，请再试一次。"
+    })[c] || "生成中断了，请再试一次。";
+  }
+
+  async function run(kind) {
+    if (!sample) { showNoSample(); return; }
+    let mine = "";
+    if (kind === "review") {
+      mine = $("myAnswer").value.trim();
+      if (mine.length < 20) { $("status").className = "status err"; $("status").textContent = "先在上面写下你的回答（至少 20 个字），再点评。"; return; }
+    }
+    clearInterval(timerId); timerId = 0;
+    ctl = new AbortController();
+    const prompt = kind === "review" ? await reviewPrompt(mine) : await answerPrompt();
+    $("outLabel").textContent = kind === "review" ? "点评与改进" : "参考答案";
+    $("out").hidden = false; $("outBody").innerHTML = '<p class="hint">正在思考，通常需要 10–60 秒…</p>';
+    setBusy(true, "正在生成…");
+    try {
+      const { text, truncated } = await sample(prompt, {
+        signal: ctl.signal, cache: false,
+        onText: ({ text }) => { $("outBody").innerHTML = md(text); $("status").textContent = "正在写…"; }
+      });
+      lastOut = { kind, text, q: question };
+      $("outBody").innerHTML = md(text);
+      setBusy(false);
+      if (truncated) $("status").textContent = "内容被截断了，可以把回答时长调短再试。";
+    } catch (e) {
+      setBusy(false);
+      if (e && e.text) { $("outBody").innerHTML = md(e.text); lastOut = { kind, text: e.text, q: question }; }
+      else if (!e || e.code !== "cancelled") $("out").hidden = true;
+      if (e && e.code === "cancelled") { $("status").textContent = "已停止。"; return; }
+      $("status").className = "status err"; $("status").textContent = errText(e);
+    }
+  }
+
+  async function genQuestion() {
+    if (!sample) { showNoSample(); return; }
+    ctl = new AbortController();
+    setBusy(true, "面试官正在出题…");
+    try {
+      const r = await sample.json(await questionPrompt(), { signal: ctl.signal, cache: false });
+      const q = r && typeof r.question === "string" ? r.question.trim() : "";
+      if (!q) throw { code: "invalid_json" };
+      (generated[dir.id] = generated[dir.id] || []).push(q);
+      store.set("ivp.generated", generated);
+      setBusy(false);
+      setQuestion(q, r.intent ? String(r.intent) : "");
+    } catch (e) {
+      setBusy(false);
+      if (e && e.code === "cancelled") { $("status").textContent = "已停止。"; return; }
+      $("status").className = "status err"; $("status").textContent = errText(e);
+    }
+  }
+
+  function showNoSample() {
+    $("status").className = "status err";
+    $("status").textContent = "这里无法直接调用 Claude（需要在 claude.ai 里打开这个页面）。可以点「复制提示词」，粘贴到 Claude 对话里使用。";
+  }
+
+  async function copy(text, btn) {
+    const old = btn.textContent;
+    try { await navigator.clipboard.writeText(text); btn.textContent = "已复制"; }
+    catch {
+      const ta = document.createElement("textarea"); ta.value = text; document.body.append(ta); ta.select();
+      try { document.execCommand("copy"); btn.textContent = "已复制"; } catch { btn.textContent = "复制失败，请手动选择"; }
+      ta.remove();
+    }
+    setTimeout(() => (btn.textContent = old), 1600);
+  }
+
+  // ---------- 事件 ----------
+  $("btnAnswer").onclick = () => run("answer");
+  $("btnReview").onclick = () => run("review");
+  $("btnStop").onclick = () => ctl && ctl.abort();
+  $("genQ").onclick = genQuestion;
+  $("useCustom").onclick = () => { const q = $("customQ").value.trim(); if (q) { setQuestion(q, ""); $("customQ").value = ""; } };
+  $("btnCopy").onclick = () => copy(lastOut.text, $("btnCopy"));
+  $("btnSave").onclick = () => {
+    if (!lastOut.text) return;
+    const d = new Date();
+    const time = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")} ${String(d.getHours()).padStart(2, "0")}:${String(d.getMinutes()).padStart(2, "0")}`;
+    saved.push({ dir: dir.id, q: lastOut.q, kind: lastOut.kind, text: lastOut.text, time });
+    store.set("ivp.saved", saved); renderSaved(); renderBank();
+    $("btnSave").textContent = "已保存"; setTimeout(() => ($("btnSave").textContent = "存入答题手册"), 1600);
+  };
+  $("btnCopyPrompt").onclick = async () => {
+    const mine = $("myAnswer").value.trim();
+    const p = mine.length >= 20 ? await reviewPrompt(mine) : await answerPrompt();
+    copy(p, $("btnCopyPrompt"));
+  };
+
+  // ---------- 启动 ----------
+  async function loadProfile() {
+    for (const f of ["profile.json", "profile.example.json"]) {
+      try { const r = await fetch(f); if (r.ok) return await r.json(); } catch {}
+    }
+    return null;
+  }
+
+  (async () => {
+    P = await loadProfile();
+    if (!P) { $("question").textContent = "没有找到 profile.json。请按 README 把背景资料放到页面同一目录下。"; return; }
+    const savedDir = store.get("ivp.dir", null);
+    dir = P.directions.find((d) => d.id === savedDir) || P.directions[0];
+    renderDirs(); renderBackground(); renderSaved();
+    setQuestion(bankFor(dir)[0], "");
+  })();
+
+  if (window.claude && typeof window.claude.use === "function") {
+    window.claude.use("sample").then((s) => { sample = s; }).catch(() => { sample = null; });
+  }
+})();
+</script>
