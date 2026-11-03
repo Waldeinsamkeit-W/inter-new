@@ -8,6 +8,9 @@
 | `images/` | 配图。`00_封面_2.35比1.png`（1800×766，头条封面）、`00_封面_1比1.png`（1080×1080，方形裁切参考），`01`–`14` 为正文配图，宽 1080 像素 |
 | `build_images.py` | 生成全部配图：卡片先写成 HTML（图表由 matplotlib 输出 SVG），再截图 |
 | `shoot.cjs` | 截图脚本（Node + Playwright） |
+| `longimage/` | 整篇长图：`海天七年财报拆解_长图.jpg`（1080 像素宽，约 3.4 万像素高，4.9 MB），以及按小节切开的 6 段（每段 1 MB 左右，适合分段上传或发朋友圈） |
+| `build_long_image.py` | 生成长图：正文从 `index.html` 读取，图表复用配图组件，排版后分段截图再拼接 |
+| `shoot_long.cjs` | 长图分段截图脚本 |
 
 ## 发布步骤
 
@@ -15,10 +18,14 @@
 2. 正文里每个虚线框写着该放哪张图，按文件名上传 `images/` 里的图片，再删掉虚线框。
 3. 封面上传 `00_封面_2.35比1.png`。
 
-## 重新生成配图
+## 重新生成配图和长图
 
 ```bash
 python wechat/build_images.py
+```
+
+```bash
+python wechat/build_long_image.py
 ```
 
 需要 `node` 和 `playwright`；字体用 Noto Sans SC（中文）和 Barlow Condensed（数字），未安装时浏览器会退回系统字体。图里的数字都由 `analysis.py` 现算，改了 `data/` 下的数据后重跑即可。

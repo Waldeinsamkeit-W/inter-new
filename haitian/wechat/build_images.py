@@ -82,7 +82,11 @@ def page(body: str, extra_css: str = "") -> str:
     )
 
 
+COMPONENTS: dict[int, dict] = {}  # 每张卡的标题、副标题、内容和样式，长图复用
+
+
 def card(no: int, title: str, sub: str, inner: str, foot: str = SRC, tick: bool = True, extra_css: str = "") -> str:
+    COMPONENTS[no] = {"title": title, "sub": sub, "inner": inner, "css": extra_css}
     tick_html = '<span class="tick">勾稽 60/60 ✓</span>' if tick else ""
     return page(
         f"""<div id="card">
@@ -629,7 +633,8 @@ h1 {{ font-weight: 900; letter-spacing: 1px; margin: 0; line-height: 1.28; }}
 # ---------------------------------------------------------------- 入口
 
 
-def main() -> None:
+def build_pages():
+    """生成全部卡片的 HTML，同时把每张卡的内容登记到 COMPONENTS。返回 (页面列表, 杜邦表)。"""
     _setup_mpl()
     w, long = load_financials()
     a = load_assumptions()
@@ -697,8 +702,11 @@ def main() -> None:
             sensitivity_table(sens, r), extra_css=SENS_CSS), 540),
         ("14_跟踪信号.html", card_track(m), 540),
     ]
-    pages = covers(dp) + pages
+    return covers(dp) + pages, dp
 
+
+def main() -> None:
+    pages, _ = build_pages()
     BUILD.mkdir(exist_ok=True)
     OUT.mkdir(exist_ok=True)
     jobs = []
@@ -715,7 +723,7 @@ def main() -> None:
     jobs_file = BUILD / "jobs.json"
     jobs_file.write_text(json.dumps(jobs, ensure_ascii=False), encoding="utf-8")
     subprocess.run(["node", str(HERE / "shoot.cjs"), str(jobs_file)], check=True)
-    print(f"现金+理财占比 {cash_share:.1%}；所得税及其他 {other:+.2f} 个点")
+    print(f"已生成 {len(jobs)} 张图：{OUT}")
 
 
 if __name__ == "__main__":
