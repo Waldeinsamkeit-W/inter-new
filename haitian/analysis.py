@@ -28,7 +28,9 @@ BASE_YEAR = 2025
 FORECAST_YEARS = list(range(2026, 2031))
 
 # 年报披露的同比增速和比率，用来勾稽检查 data/financials.csv 里的绝对数有没有录错。
-# (年份, 指标类型, 科目, 披露值, 出处)
+# (年份, 指标类型, 科目, 披露值, 出处[, 重述后上年数（元）])
+# 2025 年报因同一控制下合并海天创新重述了 2024 年数，披露的 2025 年增速是对重述后基数算的，
+# 所以这几项带上重述后的上年数；其余各年对原报上年数。
 REPORTED_CHECKS = [
     (2019, "yoy", "revenue", 0.1622, "2019年报"),
     (2020, "yoy", "revenue", 0.1513, "2020年报"),
@@ -36,22 +38,24 @@ REPORTED_CHECKS = [
     (2022, "yoy", "revenue", 0.0242, "2022年报"),
     (2023, "yoy", "revenue", -0.0410, "2023年报"),
     (2024, "yoy", "revenue", 0.0953, "2024年报"),
-    (2025, "yoy", "revenue", 0.0732, "2025年报（对比重述后2024年）"),
+    (2025, "yoy", "revenue", 0.0732, "2025年报", 26904508894.01),
     (2020, "yoy", "np_parent", 0.1961, "2020年报"),
     (2021, "yoy", "np_parent", 0.0418, "2021年报"),
     (2022, "yoy", "np_parent", -0.0709, "2022年报"),
     (2023, "yoy", "np_parent", -0.0921, "2023年报"),
     (2024, "yoy", "np_parent", 0.1275, "2024年报"),
-    (2025, "yoy", "np_parent", 0.1095, "2025年报"),
+    (2025, "yoy", "np_parent", 0.1095, "2025年报", 6343626494.69),
     (2021, "yoy", "np_parent_deducted", 0.0409, "2021年报"),
     (2022, "yoy", "np_parent_deducted", -0.0722, "2022年报"),
     (2023, "yoy", "np_parent_deducted", -0.0957, "2023年报"),
+    (2024, "yoy", "np_parent_deducted", 0.1251, "2024年报"),
     (2025, "yoy", "np_parent_deducted", 0.1281, "2025年报"),
     (2019, "yoy", "cogs", 0.1844, "2019年报"),
+    (2020, "yoy", "cogs", 0.2204, "2020年报"),
     (2021, "yoy", "cogs", 0.1636, "2021年报"),
     (2022, "yoy", "cogs", 0.0740, "2022年报"),
     (2023, "yoy", "cogs", -0.0269, "2023年报"),
-    (2025, "yoy", "cogs", 0.0184, "媒体转述2025年报"),
+    (2025, "yoy", "cogs", 0.0179, "2025年报", 16956814477.84),
     (2019, "yoy", "selling", -0.0327, "2019年报"),
     (2021, "yoy", "selling", -0.0063, "2021年报"),
     (2022, "yoy", "selling", 0.0156, "2022年报"),
@@ -63,26 +67,28 @@ REPORTED_CHECKS = [
     (2022, "yoy", "admin", 0.1211, "2022年报"),
     (2023, "yoy", "admin", 0.1900, "2023年报"),
     (2024, "yoy", "admin", 0.1226, "2024年报"),
-    (2025, "yoy", "admin", 0.2073, "证券之星转述2025年报"),
+    (2025, "yoy", "admin", 0.2073, "2025年报", 579793272.25),
     (2019, "yoy", "rnd", 0.1915, "2019年报"),
+    (2021, "yoy", "rnd", 0.0845, "2021年报"),
     (2022, "yoy", "rnd", -0.0267, "2022年报"),
     (2023, "yoy", "rnd", -0.0478, "2023年报"),
     (2024, "yoy", "rnd", 0.1735, "2024年报"),
-    (2025, "yoy", "rnd", 0.0899, "媒体转述2025年报"),
-    (2025, "yoy", "finance", -0.1043, "2025年报（负数费用的变动）"),
+    (2025, "yoy", "rnd", 0.0805, "2025年报（上年数分位被截断）", 846815791.00),
+    (2025, "yoy", "finance", -0.1043, "2025年报（负数费用的变动）", -509134949.50),
     (2019, "yoy", "ocf", 0.0953, "2019年报"),
+    (2022, "yoy", "ocf", -0.3943, "2022年报"),
     (2023, "yoy", "ocf", 0.9204, "2023年报"),
-    (2025, "yoy", "ocf", 0.1324, "2025年报（对比重述后2024年）"),
+    (2025, "yoy", "ocf", 0.1324, "2025年报", 6840201569.11),
     (2019, "yoy", "total_assets", 0.2289, "2019年报"),
     (2021, "yoy", "total_assets", 0.1288, "2021年报"),
     (2022, "yoy", "total_assets", 0.0216, "2022年报"),
     (2024, "yoy", "total_assets", 0.0634, "2024年报"),
-    (2025, "yoy", "total_assets", 0.2770, "2025年报"),
+    (2025, "yoy", "total_assets", 0.2767, "2025年报", 40875062220.95),
     (2019, "yoy", "equity_parent", 0.1951, "2019年报"),
     (2020, "yoy", "equity_parent", 0.2103, "2020年报"),
     (2021, "yoy", "equity_parent", 0.1661, "2021年报"),
     (2024, "yoy", "equity_parent", 0.0829, "2024年报"),
-    (2025, "yoy", "equity_parent", 0.3380, "2025年报"),
+    (2025, "yoy", "equity_parent", 0.3380, "媒体转述2025年报"),
     (2020, "gross_margin", "cogs", 0.4217, "2020年报"),
     (2023, "gross_margin", "cogs", 0.3474, "研报转述2023年报"),
     (2025, "gross_margin", "cogs", 0.4022, "媒体转述2025年报"),
@@ -324,10 +330,12 @@ def implied_fcf_margin(w, a) -> float:
 
 def reported_checks(w: pd.DataFrame) -> pd.DataFrame:
     rows = []
-    for year, kind, item, reported, src in REPORTED_CHECKS:
+    for year, kind, item, reported, src, *rest in REPORTED_CHECKS:
+        base = rest[0] / 1e8 if rest else None
         if kind == "yoy":
-            computed = w.at[year, item] / w.at[year - 1, item] - 1
-            label = "同比"
+            prev = w.at[year - 1, item] if base is None else base
+            computed = w.at[year, item] / prev - 1
+            label = "同比" if base is None else "同比（对重述后上年）"
         else:
             computed = 1 - w.at[year, "cogs"] / w.at[year, "revenue"]
             label = "毛利率"
@@ -342,6 +350,7 @@ def reported_checks(w: pd.DataFrame) -> pd.DataFrame:
                 "差异": diff,
                 "结果": "通过" if abs(diff) <= CHECK_TOLERANCE else "待核对",
                 "出处": src,
+                "重述后上年数": base,
             }
         )
     return pd.DataFrame(rows)

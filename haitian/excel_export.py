@@ -445,13 +445,16 @@ def _sheet_sensitivity(wb, fcols, price: float, base_wacc: float, base_g: float,
 
 def _sheet_checks(wb, checks: pd.DataFrame):
     ws = wb.create_sheet("勾稽检查")
-    _title(ws, "勾稽检查：用录入数据算出的增速/毛利率 vs 年报披露值", "差异超过容差标“待核对”；容差可改（B3）")
+    _title(ws, "勾稽检查：用录入数据算出的增速/毛利率 vs 年报披露值", "差异超过容差标“待核对”；容差可改（B3）。2025 年报披露的增速以重述后的 2024 年数为基数，这几行用 I 列的重述后上年数计算")
     _set(ws, "A3", "容差")
     _set(ws, "B3", CHECK_TOLERANCE, PCT2, color=BLUE, fill=YELLOW_FILL)
-    _header(ws, 5, ["年份", "科目", "指标", "按数据计算", "年报披露", "差异", "结果", "出处"])
+    _header(ws, 5, ["年份", "科目", "指标", "按数据计算", "年报披露", "差异", "结果", "出处", "重述后上年数（亿元）"])
     for i, row in enumerate(checks.itertuples(index=False), start=6):
         y, item = int(row.年份), row.科目
-        if row.指标 == "同比":
+        if pd.notna(row.重述后上年数):
+            _set(ws, f"I{i}", float(row.重述后上年数), NUM, color=BLUE)
+            f = f"={d(item, y)}/I{i}-1"
+        elif row.指标 == "同比":
             f = f"={d(item, y)}/{d(item, y - 1)}-1"
         else:
             f = f"=1-{d('cogs', y)}/{d('revenue', y)}"
@@ -467,7 +470,7 @@ def _sheet_checks(wb, checks: pd.DataFrame):
     _set(ws, f"A{last + 2}", "通过项数", bold=True)
     _set(ws, f"B{last + 2}", f'=COUNTIF(G6:G{last},"通过")&"/"&COUNTA(G6:G{last})', bold=True)
     ws.freeze_panes = "A6"
-    _widths(ws, {"A": 8, "B": 20, "C": 8, "D": 12, "E": 12, "F": 10, "G": 9, "H": 30})
+    _widths(ws, {"A": 8, "B": 20, "C": 18, "D": 12, "E": 12, "F": 10, "G": 9, "H": 32, "I": 20})
 
 
 # ---------------------------------------------------------------- 入口
