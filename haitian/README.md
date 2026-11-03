@@ -10,6 +10,7 @@ haitian/
 ├── analysis.py                计算：利润率、杜邦、现金流、DCF、敏感性、勾稽检查（入口）
 ├── charts.py                  配图
 ├── excel_export.py            生成带公式的 Excel
+├── wechat/                    公众号版：口语化正文预览页 + 16 张手机竖屏配图（见 wechat/README.md）
 └── output/
     ├── haitian_analysis.xlsx  分析底稿（9 张表，524 个公式）
     └── charts/                01–08 号配图，PNG，1650 px 宽
