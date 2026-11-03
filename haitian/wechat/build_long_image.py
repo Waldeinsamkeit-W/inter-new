@@ -6,7 +6,8 @@
 
 输出（wechat/longimage/）：
   海天七年财报拆解_长图.jpg       完整长图
-  海天七年财报拆解_长图_第N段.jpg  按小节切开的分段版，单张不超过约 8000 像素高，方便上传
+  海天七年财报拆解_长图_第N段.jpg  按小节切开的分段版，用于上传公众号正文：
+                                   公众号要求单张图片宽×高不超过 600 万像素，1080 宽时每段不超过 5400 像素高
 
 用法（在 haitian/ 目录下）：
   python wechat/build_long_image.py
@@ -30,7 +31,8 @@ OUT = HERE / "longimage"
 BUILD = HERE / "_build" / "long"
 W = 420  # 设计宽度（CSS 像素），和配图卡片一致
 SCALE = 1080 / W
-MAX_PART = 3000  # 分段版每段最高 3000 CSS 像素 ≈ 7700 像素
+MAX_PX = 6_000_000  # 公众号正文单图像素上限（宽×高）
+MAX_PART = 2100  # 分段版每段最高 2100 CSS 像素 ≈ 5400 像素，1080×5400 = 583 万像素
 
 INK, INK2, MUTED, RULE, SOY, NUM = bi.INK, bi.INK2, bi.MUTED, bi.RULE, bi.SOY, bi.NUM
 BODY = "#3d3632"
@@ -222,7 +224,12 @@ def main() -> None:
         part.save(OUT / f"{name}_第{k + 1}段.jpg", quality=90, subsampling=0, optimize=True, progressive=True)
     for f in sorted(OUT.iterdir()):
         with Image.open(f) as im:
-            print(f"{f.name}  {im.size[0]}×{im.size[1]}  {f.stat().st_size / 1e6:.1f} MB")
+            px = im.size[0] * im.size[1]
+            flag = "可上传公众号" if px <= MAX_PX else "超过 600 万像素，公众号正文传不了"
+            print(f"{f.name}  {im.size[0]}×{im.size[1]}  {px / 1e4:.0f} 万像素  {f.stat().st_size / 1e6:.1f} MB  {flag}")
+    secs = {b["y"] for b in meta["breaks"] if b["kind"] == "sec"}
+    figs = {b["y"] for b in meta["breaks"] if b["kind"] == "fig"}
+    print("切分位置：", ["小节开头" if c in secs else "图的开头" if c in figs else "硬切" for c in cuts[1:-1]])
 
 
 if __name__ == "__main__":
