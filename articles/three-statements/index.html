@@ -1,0 +1,481 @@
+<title>三表联动推文</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<style>
+  /* Layout: a phone-width WeChat article column on a cool grey desk, with a publishing panel above it.
+     Single light theme on purpose: it previews how the post looks on WeChat's white page. */
+  :root {
+    color-scheme: light;
+    --desk: #EDF0F4;
+    --paper: #FFFFFF;
+    --ink: #1F2A37;
+    --text: #333C48;
+    --muted: #667080;
+    --line: #DDE3EA;
+    --soft: #F3F5F8;
+    --bs: #2D5B9A;      /* 资产负债表 */
+    --bs-tint: #EAF0F8;
+    --is: #B86A12;      /* 利润表 */
+    --is-tint: #FBF1E4;
+    --cf: #23806A;      /* 现金流量表 */
+    --cf-tint: #E6F3EF;
+    --font: -apple-system, BlinkMacSystemFont, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "Noto Sans SC", "WenQuanYi Zen Hei", sans-serif;
+  }
+  body {
+    background: var(--desk);
+    color: var(--text);
+    font-family: var(--font);
+    padding-left: max(16px, env(safe-area-inset-left, 0px));
+    padding-right: max(16px, env(safe-area-inset-right, 0px));
+    padding-block: 24px 48px;
+  }
+  .page { max-width: 640px; margin: 0 auto; display: grid; gap: 20px; }
+
+  /* ---------- publishing panel ---------- */
+  .pubinfo {
+    background: var(--paper);
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    padding: 20px;
+    display: grid;
+    gap: 18px;
+  }
+  .eyebrow { margin: 0; font-size: 12px; letter-spacing: 0.12em; color: var(--muted); }
+  .field { display: grid; gap: 8px; min-width: 0; }
+  .field-label { font-size: 13px; font-weight: 600; color: var(--ink); }
+  .titles { margin: 0; padding: 0; list-style: none; display: grid; gap: 6px; }
+  .row {
+    display: flex; align-items: center; justify-content: space-between; gap: 12px;
+    background: var(--soft); border-radius: 8px; padding: 8px 8px 8px 12px;
+  }
+  .row span { font-size: 15px; color: var(--ink); line-height: 1.5; min-width: 0; }
+  .row.tall { align-items: flex-start; }
+  .cover { display: block; width: 100%; max-width: 100%; height: auto; border-radius: 8px; border: 1px solid var(--line); }
+  .meta-note { margin: 0; font-size: 12px; color: var(--muted); }
+  button {
+    font: inherit; font-size: 13px; cursor: pointer;
+    border-radius: 7px; border: 1px solid var(--line); background: var(--paper); color: var(--ink);
+    padding: 6px 12px; white-space: nowrap; flex: none;
+  }
+  button:hover { border-color: var(--muted); }
+  button:focus-visible { outline: 2px solid var(--bs); outline-offset: 2px; }
+  button.primary { background: var(--ink); border-color: var(--ink); color: #FFFFFF; font-size: 15px; padding: 10px 18px; }
+  button.primary:hover { background: #33404F; }
+  .actions { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; }
+  .status { font-size: 13px; color: var(--cf); min-height: 1em; }
+  .status.warn { color: var(--is); }
+  .hint { margin: 0; font-size: 13px; line-height: 1.7; color: var(--muted); }
+
+  /* ---------- the article ---------- */
+  .phone {
+    background: var(--paper);
+    border-radius: 12px;
+    padding: 28px 20px 36px;
+    min-width: 0;
+  }
+  .post-title { margin: 0 0 10px; font-size: 22px; line-height: 1.4; font-weight: 700; color: var(--ink); text-wrap: balance; }
+  .post-meta { margin: 0 0 24px; font-size: 14px; color: var(--muted); }
+
+  .post { font-size: 16px; line-height: 1.85; color: var(--text); letter-spacing: 0.5px; }
+  .post p { margin: 0 0 16px; text-align: justify; }
+  .post strong { color: var(--ink); font-weight: 700; }
+  .post h2 {
+    margin: 40px 0 16px; padding-bottom: 8px;
+    font-size: 19px; line-height: 1.5; font-weight: 700; color: var(--ink);
+    border-bottom: 1px solid var(--line);
+  }
+  .post h3 { margin: 28px 0 12px; font-size: 17px; line-height: 1.5; font-weight: 700; color: var(--ink); }
+  .post h3 .sub { display: block; font-size: 15px; font-weight: 400; color: var(--muted); }
+  .post .h-bs { color: var(--bs); }
+  .post .h-is { color: var(--is); }
+  .post .h-cf { color: var(--cf); }
+  .post ol, .post ul { margin: 0 0 16px; padding-left: 22px; }
+  .post li { margin: 0 0 6px; }
+  .post hr { border: 0; border-top: 1px solid var(--line); margin: 32px 0; }
+
+  /* statement cards in part one */
+  .post .card { margin: 0 0 12px; padding: 14px 16px; border-radius: 8px; border: 1px solid; }
+  .post .card p { margin: 0; }
+  .post .card .card-name { font-size: 17px; font-weight: 700; }
+  .post .card .card-q { font-weight: 700; color: var(--ink); }
+  .post .card .card-f { margin-top: 6px; font-size: 15px; color: var(--muted); }
+  .post .card-bs { background: var(--bs-tint); border-color: var(--bs); }
+  .post .card-bs .card-name { color: var(--bs); }
+  .post .card-is { background: var(--is-tint); border-color: var(--is); }
+  .post .card-is .card-name { color: var(--is); }
+  .post .card-cf { background: var(--cf-tint); border-color: var(--cf); }
+  .post .card-cf .card-name { color: var(--cf); }
+
+  /* statements */
+  .tbl-wrap { overflow-x: auto; margin: 0 0 20px; }
+  .post table { width: 100%; border-collapse: collapse; font-size: 15px; line-height: 1.6; letter-spacing: 0; font-variant-numeric: tabular-nums; }
+  .post th { text-align: left; font-weight: 700; padding: 8px 10px; color: #FFFFFF; }
+  .post td { padding: 7px 10px; border-bottom: 1px solid var(--line); vertical-align: top; }
+  .post .num { text-align: right; white-space: nowrap; }
+  .post .why { color: var(--muted); font-size: 14px; }
+  .post tr.sub td { font-weight: 700; color: var(--ink); background: var(--soft); }
+  .post tr.total td { font-weight: 700; color: var(--ink); border-top: 2px solid var(--ink); border-bottom: 2px solid var(--ink); }
+  .post .tbl-is th { background: var(--is); }
+  .post .tbl-bs th { background: var(--bs); }
+  .post .tbl-cf th { background: var(--cf); }
+  .post .tbl-adj th { background: var(--ink); }
+
+  /* formulas, notes, checks */
+  .post .formula { margin: 0 0 16px; padding: 12px 16px; border-radius: 8px; background: var(--soft); color: var(--ink); font-weight: 700; text-align: center; }
+  .post .note { margin: 0 0 16px; padding: 12px 16px; border-radius: 8px; background: var(--soft); font-size: 15px; line-height: 1.75; color: var(--muted); }
+  .post .note strong { color: var(--text); }
+  .post .ok { color: var(--cf); font-weight: 700; }
+  .post .motto {
+    margin: 8px 0 24px; padding: 16px; border-radius: 8px;
+    background: var(--ink); color: #FFFFFF; font-size: 18px; font-weight: 700; text-align: center; letter-spacing: 2px;
+  }
+  .post .fig { margin: 8px 0 20px; }
+  .post .fig img { display: block; width: 100%; max-width: 100%; height: auto; border-radius: 8px; border: 1px solid var(--line); }
+  .post .fig figcaption { margin-top: 8px; font-size: 13px; color: var(--muted); text-align: center; }
+  .post .foot { font-size: 13px; color: var(--muted); }
+  .post .ask { text-align: center; font-weight: 700; color: var(--ink); }
+</style>
+
+<div class="page">
+  <header class="pubinfo" aria-label="发布信息">
+    <p class="eyebrow">公众号推文 · 发布信息</p>
+
+    <div class="field">
+      <div class="field-label">备选标题（选一个填进标题栏）</div>
+      <ol class="titles">
+        <li class="row"><span id="t1">一家奶茶店，讲透财报“三表联动”</span><button type="button" data-copy="t1">复制</button></li>
+        <li class="row"><span id="t2">三张表，一笔账：5 分钟看懂三表勾稽</span><button type="button" data-copy="t2">复制</button></li>
+        <li class="row"><span id="t3">赚了 4 万，为什么只多了 3 万现金？</span><button type="button" data-copy="t3">复制</button></li>
+      </ol>
+    </div>
+
+    <div class="field">
+      <div class="field-label">摘要（62 字，上限 120）</div>
+      <div class="row tall"><span id="abs">资产负债表、利润表、现金流量表不是三份孤立的文件。用一家奶茶店一年的账，讲清三条勾稽线：利润进权益，现金对货币，变动解差异。</span><button type="button" data-copy="abs">复制</button></div>
+    </div>
+
+    <div class="field">
+      <div class="field-label">封面图（900 × 383，右键或长按保存后上传）</div>
+      <img class="cover" src="images/cover.png" alt="封面：三表联动，一家奶茶店讲透勾稽关系" width="900" height="383">
+    </div>
+
+    <div class="actions">
+      <button type="button" class="primary" id="copyArticle">复制正文（带排版）</button>
+      <span class="status" id="status" role="status" aria-live="polite"></span>
+    </div>
+    <p class="hint">复制后直接粘贴到公众号编辑器的正文区。图片不会随文字一起过去：正文里会留一个“在这里插入图片”的提示框，把下方的关系图保存下来，在提示框处插入即可。</p>
+  </header>
+
+  <main class="phone">
+    <h1 class="post-title">一家奶茶店，讲透财报“三表联动”</h1>
+    <p class="post-meta">财报入门 · 约 5 分钟读完</p>
+
+    <article id="article" class="post">
+      <p>第一次翻财报，很多人会被三张表绕晕：资产负债表、利润表、现金流量表，每张都密密麻麻。</p>
+      <p>其实这三张表讲的是<strong>同一盘生意</strong>，只是角度不同。表与表之间的数字环环相扣，会计上把这种关系叫作<strong>“勾稽关系”</strong>。</p>
+      <p>今天用一家奶茶店一年的账，把三张表串起来讲。看完这篇，你也能自己动手核对一份财报。</p>
+
+      <h2>一、三张表，各管什么？</h2>
+      <p>先用一句话认识它们。</p>
+
+      <section class="card card-bs">
+        <p class="card-name">资产负债表</p>
+        <p class="card-q">某一天，公司有多少家底？</p>
+        <p>它像一张<strong>照片</strong>，拍下的是某个时点（比如 12 月 31 日）的状况。</p>
+        <p class="card-f">核心公式：资产 = 负债 + 所有者权益</p>
+      </section>
+      <section class="card card-is">
+        <p class="card-name">利润表</p>
+        <p class="card-q">一段时间里，公司赚没赚钱？</p>
+        <p>它像一张<strong>成绩单</strong>，记录一段时间（比如一整年）的经营成果。</p>
+        <p class="card-f">核心公式：收入 − 成本费用 = 利润</p>
+      </section>
+      <section class="card card-cf">
+        <p class="card-name">现金流量表</p>
+        <p class="card-q">一段时间里，真金白银进出了多少？</p>
+        <p>它像一本<strong>银行流水</strong>，只认实际收到、付出的钱。</p>
+        <p class="card-f">核心公式：期初现金 + 本期净流入 = 期末现金</p>
+      </section>
+
+      <p>这里有两个区别，是理解三表联动的钥匙：</p>
+      <ol>
+        <li><strong>时点和时期</strong>：资产负债表看“某一天”，另外两张表看“一段时间”。</li>
+        <li><strong>应收和实收</strong>：利润表里，货卖出去就记收入，钱没到账也算；现金流量表里，钱真正到手才算。</li>
+      </ol>
+      <p>所以，<strong>利润不等于现金</strong>。记住这一点，后面就好懂了。</p>
+
+      <h2>二、看一家奶茶店的一年</h2>
+      <p>小林开了一家奶茶店。为了好算，我们<strong>不考虑税费和利息</strong>。第一年发生了 8 件事：</p>
+      <ol>
+        <li>自己拿出 <strong>10 万元</strong>开店（股东投入）</li>
+        <li>向银行借款 <strong>5 万元</strong></li>
+        <li>花 <strong>6 万元</strong>买制冰机、封口机等设备</li>
+        <li>进了 <strong>4 万元</strong>原料：现付 3 万，另外 1 万先欠着供应商</li>
+        <li>全年卖奶茶 <strong>12 万元</strong>：收到现金 10 万；另有 2 万是附近公司的团购，约定下个月结账。这些奶茶用掉了 3 万元原料</li>
+        <li>付房租、工资等 <strong>4 万元</strong></li>
+        <li>设备折旧 <strong>1 万元</strong>（设备用了一年，价值“用旧”了 1 万，但不用掏钱）</li>
+        <li>年底给自己分红 <strong>1 万元</strong></li>
+      </ol>
+      <p>下面，三张表依次登场（单位：万元）。</p>
+
+      <h3 class="h-is">利润表：一年赚了多少？</h3>
+      <div class="tbl-wrap">
+        <table class="tbl-is">
+          <thead><tr><th>项目</th><th class="num">金额</th></tr></thead>
+          <tbody>
+            <tr><td>营业收入</td><td class="num">12</td></tr>
+            <tr><td>减：营业成本（用掉的原料）</td><td class="num">3</td></tr>
+            <tr><td>减：房租、工资</td><td class="num">4</td></tr>
+            <tr><td>减：折旧</td><td class="num">1</td></tr>
+            <tr class="total"><td>净利润</td><td class="num">4</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3 class="h-cf">现金流量表：钱袋子怎么变？</h3>
+      <p>现金流量表把现金进出分成三类：日常经营、买卖长期资产（投资）、找钱和还钱（筹资）。</p>
+      <div class="tbl-wrap">
+        <table class="tbl-cf">
+          <thead><tr><th>项目</th><th class="num">金额</th></tr></thead>
+          <tbody>
+            <tr><td>卖奶茶收到现金</td><td class="num">+10</td></tr>
+            <tr><td>买原料付出现金</td><td class="num">−3</td></tr>
+            <tr><td>付房租、工资</td><td class="num">−4</td></tr>
+            <tr class="sub"><td>经营活动现金流</td><td class="num">+3</td></tr>
+            <tr><td>买设备</td><td class="num">−6</td></tr>
+            <tr class="sub"><td>投资活动现金流</td><td class="num">−6</td></tr>
+            <tr><td>股东投入</td><td class="num">+10</td></tr>
+            <tr><td>银行借款</td><td class="num">+5</td></tr>
+            <tr><td>分红</td><td class="num">−1</td></tr>
+            <tr class="sub"><td>筹资活动现金流</td><td class="num">+14</td></tr>
+            <tr><td>现金净增加（3 − 6 + 14）</td><td class="num">+11</td></tr>
+            <tr><td>期初现金</td><td class="num">0</td></tr>
+            <tr class="total"><td>期末现金</td><td class="num">11</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3 class="h-bs">资产负债表：年底的家底</h3>
+      <div class="tbl-wrap">
+        <table class="tbl-bs">
+          <thead><tr><th>项目</th><th class="num">金额</th></tr></thead>
+          <tbody>
+            <tr><td>货币资金</td><td class="num">11</td></tr>
+            <tr><td>应收账款（团购款还没收）</td><td class="num">2</td></tr>
+            <tr><td>存货（4 万原料用掉 3 万）</td><td class="num">1</td></tr>
+            <tr><td>固定资产（6 万设备减去折旧 1 万）</td><td class="num">5</td></tr>
+            <tr class="sub"><td>资产合计</td><td class="num">19</td></tr>
+            <tr><td>短期借款</td><td class="num">5</td></tr>
+            <tr><td>应付账款（欠供应商的）</td><td class="num">1</td></tr>
+            <tr class="sub"><td>负债合计</td><td class="num">6</td></tr>
+            <tr><td>实收资本</td><td class="num">10</td></tr>
+            <tr><td>未分配利润</td><td class="num">3</td></tr>
+            <tr class="sub"><td>所有者权益合计</td><td class="num">13</td></tr>
+            <tr class="total"><td>负债和所有者权益合计</td><td class="num">19</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p>资产 19 = 负债 6 + 所有者权益 13，账平了 <span class="ok">✓</span></p>
+
+      <h2>三、三条勾稽线，把三张表串起来</h2>
+
+      <h3>第 ① 条：利润表 → 资产负债表<span class="sub">净利润流进了“未分配利润”</span></h3>
+      <p>公司赚的钱最终归股东，所以净利润会进入资产负债表的所有者权益。</p>
+      <p class="formula">期末未分配利润 = 期初未分配利润 + 本期净利润 − 分红</p>
+      <p>奶茶店：0 + 4 − 1 = <strong>3 万</strong>，和资产负债表上的 3 万对上了 <span class="ok">✓</span></p>
+      <p class="note">实际财报里还要减去“提取盈余公积”，原理一样：利润先进来，再按规定分出去一部分。</p>
+
+      <h3>第 ② 条：现金流量表 → 资产负债表<span class="sub">期末现金对上“货币资金”</span></h3>
+      <p>现金流量表最后一行“期末现金及现金等价物余额”，应该和资产负债表的“货币资金”对得上。</p>
+      <p>奶茶店：现金流量表期末现金 11 万 = 资产负债表货币资金 <strong>11 万</strong> <span class="ok">✓</span></p>
+      <p class="note"><strong>小提醒：</strong>上市公司的这两个数常常不完全相等。差额一般是<strong>受限资金</strong>，比如银行承兑汇票保证金、被冻结的存款。它们算在货币资金里，但不能随便动用，所以不算“现金及现金等价物”。差额的原因可以在财报附注里找到；如果差额很大又说不清，就要多留个心眼。</p>
+
+      <h3>第 ③ 条：利润表 → 现金流量表<span class="sub">从净利润，推出经营现金流</span></h3>
+      <p>奶茶店赚了 4 万利润，经营活动却只流入 3 万现金。少的 1 万去哪了？</p>
+      <p>答案藏在资产负债表的变动里：</p>
+      <div class="tbl-wrap">
+        <table class="tbl-adj">
+          <thead><tr><th>项目</th><th class="num">金额</th><th>为什么</th></tr></thead>
+          <tbody>
+            <tr><td>净利润</td><td class="num">4</td><td class="why">起点</td></tr>
+            <tr><td>加：折旧</td><td class="num">+1</td><td class="why">记了费用，但没花钱</td></tr>
+            <tr><td>减：应收账款增加</td><td class="num">−2</td><td class="why">记了收入，钱还没收回</td></tr>
+            <tr><td>减：存货增加</td><td class="num">−1</td><td class="why">钱花了，货还在店里</td></tr>
+            <tr><td>加：应付账款增加</td><td class="num">+1</td><td class="why">记了成本，钱还没付</td></tr>
+            <tr class="total"><td>经营活动现金流</td><td class="num">3</td><td class="why">和现金流量表一致 <span class="ok">✓</span></td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p>这种从净利润倒推经营现金流的方法叫<strong>“间接法”</strong>。上市公司年报里，现金流量表的<strong>补充资料</strong>就是这么一步步推出来的。</p>
+      <p>调整的规律只有三句：</p>
+      <ul>
+        <li><strong>不花钱的费用</strong>（折旧、摊销、减值）：加回来</li>
+        <li><strong>经营性资产增加</strong>（应收、存货变多）：钱被占用了，减掉</li>
+        <li><strong>经营性负债增加</strong>（应付变多）：别人帮你垫了钱，加上</li>
+      </ul>
+
+      <h2>四、一张图记住三表联动</h2>
+      <figure class="fig">
+        <img src="images/linkage.png" data-file="images/linkage.png" data-name="三表联动关系图" alt="三表联动关系图：利润表的净利润减分红进入资产负债表的未分配利润；现金流量表的期末现金等于资产负债表的货币资金；净利润加减调整项得到经营现金流" width="1080" height="1560">
+        <figcaption>三表联动关系图（单位：万元）</figcaption>
+      </figure>
+      <p>换个角度看：<strong>资产负债表是主角</strong>。年初拍一张照片，年末再拍一张，中间发生的事由另外两张表解释：</p>
+      <ul>
+        <li><strong>利润表</strong>解释了“未分配利润”为什么变了</li>
+        <li><strong>现金流量表</strong>解释了“货币资金”为什么变了</li>
+        <li>其余科目的变动，解释了<strong>利润和现金之间的差距</strong></li>
+      </ul>
+      <p>浓缩成一句口诀：</p>
+      <p class="motto">利润进权益，现金对货币，变动解差异</p>
+
+      <h2>五、学会勾稽，能用来做什么？</h2>
+
+      <h3>1. 检查账做得对不对</h3>
+      <p>三条线只要有一条对不上，账一定有错。会计编完报表，第一件事就是核对勾稽关系。</p>
+
+      <h3>2. 看利润的“含金量”</h3>
+      <p class="formula">净现比 = 经营活动现金流 ÷ 净利润</p>
+      <p>这个比值长期大于 1，说明利润基本都变成了现金；长期远小于 1，甚至为负，就要问一句：钱去哪了？</p>
+      <p>奶茶店的净现比是 3 ÷ 4 = 0.75，主要是团购款还没收回来，问题不大。</p>
+
+      <h3>3. 发现风险信号</h3>
+      <ul>
+        <li><strong>利润年年涨，经营现金流却常年流出</strong>：可能大量赊销、存货积压，严重的甚至是虚增收入</li>
+        <li><strong>应收账款增速远远超过收入增速</strong>：收入的质量要打个问号</li>
+        <li><strong>账上躺着大笔现金，却同时借了大量高息贷款</strong>（俗称“存贷双高”）：要警惕这些钱是否真实、能否动用</li>
+      </ul>
+      <p class="note">单个信号不等于有问题，一定要结合行业特点和财报附注一起看。</p>
+
+      <h2>写在最后</h2>
+      <p>三张表，讲的是同一个故事：</p>
+      <ul>
+        <li><strong>资产负债表</strong>告诉你：家底有多厚</li>
+        <li><strong>利润表</strong>告诉你：本事有多大</li>
+        <li><strong>现金流量表</strong>告诉你：日子过得紧不紧</li>
+      </ul>
+      <p>财务圈有句老话：<strong>“利润是观点，现金是事实。”</strong>利润里有不少会计判断，现金却是实打实的进出。</p>
+      <p>下次翻财报，不妨先拿这三条线核一核。</p>
+      <hr>
+      <p class="foot">注：为便于理解，本文例子未考虑税费、利息和盈余公积等，实际财报会更复杂，但勾稽原理相同。</p>
+      <p class="ask">你觉得三张表里哪张最难懂？欢迎在评论区聊聊。</p>
+    </article>
+  </main>
+</div>
+
+<script>
+(function () {
+  var statusEl = document.getElementById('status');
+  function say(msg, warn) {
+    statusEl.textContent = msg;
+    statusEl.classList.toggle('warn', !!warn);
+  }
+  function selectNode(node) {
+    var sel = window.getSelection();
+    var range = document.createRange();
+    range.selectNodeContents(node);
+    sel.removeAllRanges();
+    sel.addRange(range);
+  }
+
+  /* ---- short text fields: titles and abstract ---- */
+  document.querySelectorAll('[data-copy]').forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      var src = document.getElementById(btn.getAttribute('data-copy'));
+      var text = src.textContent;
+      var done = function () { btn.textContent = '已复制'; setTimeout(function () { btn.textContent = '复制'; }, 1600); };
+      var fallback = function () { selectNode(src); btn.textContent = '已选中，按 Ctrl+C'; setTimeout(function () { btn.textContent = '复制'; }, 2400); };
+      try {
+        navigator.clipboard.writeText(text).then(done, fallback);
+      } catch (e) { fallback(); }
+    });
+  });
+
+  /* ---- article: inline the computed styles so WeChat keeps the layout ---- */
+  var INHERITED = ['color', 'font-size', 'font-weight', 'font-style', 'line-height', 'letter-spacing', 'text-align'];
+  var BOX = ['margin-top', 'margin-right', 'margin-bottom', 'margin-left', 'padding-top', 'padding-right', 'padding-bottom', 'padding-left'];
+  var SIDES = ['top', 'right', 'bottom', 'left'];
+
+  function inlineStyle(el, parentCS) {
+    var cs = getComputedStyle(el), out = [];
+    INHERITED.forEach(function (p) {
+      var v = cs.getPropertyValue(p);
+      if (!parentCS || parentCS.getPropertyValue(p) !== v) out.push(p + ':' + v);
+    });
+    BOX.forEach(function (p) {
+      var v = cs.getPropertyValue(p);
+      if (v && v !== '0px') out.push(p + ':' + v);
+    });
+    SIDES.forEach(function (s) {
+      var w = cs.getPropertyValue('border-' + s + '-width');
+      var st = cs.getPropertyValue('border-' + s + '-style');
+      if (st !== 'none' && w !== '0px') out.push('border-' + s + ':' + w + ' ' + st + ' ' + cs.getPropertyValue('border-' + s + '-color'));
+    });
+    var bg = cs.getPropertyValue('background-color');
+    if (bg && bg !== 'rgba(0, 0, 0, 0)' && bg !== 'transparent') out.push('background-color:' + bg);
+    var r = cs.getPropertyValue('border-top-left-radius');
+    if (r && r !== '0px') out.push('border-radius:' + r);
+    if (cs.getPropertyValue('display') === 'block' && el.tagName === 'SPAN') out.push('display:block');
+    if (cs.getPropertyValue('white-space') === 'nowrap') out.push('white-space:nowrap');
+    if (el.tagName === 'TD' || el.tagName === 'TH') out.push('vertical-align:' + cs.getPropertyValue('vertical-align'));
+    if (el.tagName === 'TABLE') out.push('width:100%', 'border-collapse:collapse');
+    return out.join(';');
+  }
+
+  function buildArticleHTML() {
+    var src = document.getElementById('article');
+    var clone = src.cloneNode(true);
+    var a = [src].concat(Array.prototype.slice.call(src.querySelectorAll('*')));
+    var b = [clone].concat(Array.prototype.slice.call(clone.querySelectorAll('*')));
+    for (var i = 0; i < a.length; i++) {
+      var parentCS = i === 0 ? null : getComputedStyle(a[i].parentElement);
+      b[i].setAttribute('style', inlineStyle(a[i], parentCS));
+      b[i].removeAttribute('class');
+      b[i].removeAttribute('id');
+    }
+    // Images can't travel through the clipboard into WeChat: leave a visible marker instead.
+    Array.prototype.slice.call(clone.querySelectorAll('img')).forEach(function (img) {
+      var p = document.createElement('p');
+      p.setAttribute('style', 'margin:0;padding:24px 12px;border:1px dashed #B86A12;border-radius:8px;background-color:#FBF1E4;color:#B86A12;font-size:14px;text-align:center;');
+      p.textContent = '【在这里插入图片：' + img.getAttribute('data-name') + '（' + img.getAttribute('data-file') + '）】';
+      img.parentNode.replaceChild(p, img);
+    });
+    var wrap = document.createElement('section');
+    wrap.setAttribute('style', clone.getAttribute('style'));
+    while (clone.firstChild) wrap.appendChild(clone.firstChild);
+    return wrap;
+  }
+
+  document.getElementById('copyArticle').addEventListener('click', function () {
+    var node = buildArticleHTML();
+    var html = node.outerHTML;
+    var text = document.getElementById('article').innerText;
+    var ok = function () { say('已复制。打开公众号编辑器，在正文区粘贴即可。'); };
+
+    function legacyCopy() {
+      var holder = document.createElement('div');
+      holder.setAttribute('aria-hidden', 'true');
+      holder.style.cssText = 'position:fixed;left:-10000px;top:0;width:600px;background:#FFFFFF;';
+      holder.appendChild(node);
+      document.body.appendChild(holder);
+      selectNode(holder);
+      var copied = false;
+      try { copied = document.execCommand('copy'); } catch (e) { copied = false; }
+      window.getSelection().removeAllRanges();
+      document.body.removeChild(holder);
+      if (copied) { ok(); return; }
+      selectNode(document.getElementById('article'));
+      say('浏览器不允许自动复制。正文已选中，请按 Ctrl+C（Mac 按 ⌘C）。', true);
+    }
+
+    try {
+      if (navigator.clipboard && window.ClipboardItem) {
+        navigator.clipboard.write([new ClipboardItem({
+          'text/html': new Blob([html], { type: 'text/html' }),
+          'text/plain': new Blob([text], { type: 'text/plain' })
+        })]).then(ok, legacyCopy);
+        return;
+      }
+    } catch (e) { /* fall through */ }
+    legacyCopy();
+  });
+})();
+</script>
