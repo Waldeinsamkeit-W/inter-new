@@ -56,23 +56,16 @@
   .flow .to { color: var(--muted); font-size: 13px; }
   .formula { background: var(--soft); border-radius: 8px; padding: 8px 10px; font-weight: 700; color: var(--ink); text-align: center; font-size: 14px; }
 
-  /* ---------- cover ---------- */
-  .cover { background: var(--ink); color: #FFFFFF; padding: 22px 22px 18px; }
-  .cover .top { color: #A9B4C2; }
-  .cover .prog { background: #33404F; }
-  .cover .prog i { background: #FFFFFF; }
-  .cover .eyebrow { margin-top: 48px; font-size: 13px; letter-spacing: 0.3em; color: #A9B4C2; }
-  .cover .big { font-family: var(--serif); font-weight: 900; font-size: 66px; line-height: 1.12; letter-spacing: 0.04em; margin: 8px 0 10px; }
-  .cover .sub { font-size: 17px; color: #DCE3EC; }
-  .cover .chips { display: flex; gap: 8px; margin-top: 18px; }
-  .cover .chips .chip { font-size: 13px; padding: 3px 11px; }
-  .cover .teaser { margin-top: auto; border: 1px solid #44505F; border-radius: 12px; padding: 13px 14px; }
-  .cover .teaser .q { font-family: var(--serif); font-weight: 900; font-size: 19px; line-height: 1.45; }
-  .cover .teaser .a { margin-top: 6px; font-size: 12.5px; color: #A9B4C2; }
-  .cover .motto { margin: 14px 0 10px; font-size: 13px; letter-spacing: 0.12em; color: #DCE3EC; }
+  /* ---------- page 1: dark hero band + opening ---------- */
+  .hero { margin: -18px -16px 14px; padding: 18px 18px 16px; background: var(--ink); color: #FFFFFF; }
+  .hero .top { color: #A9B4C2; }
+  .hero .eyebrow { margin-top: 12px; font-size: 12px; letter-spacing: 0.3em; color: #A9B4C2; }
+  .hero .big { font-family: var(--serif); font-weight: 900; font-size: 50px; line-height: 1.12; letter-spacing: 0.04em; margin: 4px 0 6px; }
+  .hero .sub { font-size: 16px; color: #DCE3EC; }
+  .hero .q { margin-top: 12px; padding-top: 10px; border-top: 1px solid #44505F; font-family: var(--serif); font-weight: 900; font-size: 17px; line-height: 1.5; }
 
-  /* ---------- statement rows (p2) ---------- */
-  .srow { display: grid; grid-template-columns: 92px 1fr; gap: 10px; align-items: center; background: var(--paper); border-radius: 10px; padding: 10px 12px; }
+  /* ---------- statement rows (p1) ---------- */
+  .srow { display: grid; grid-template-columns: 92px 1fr; gap: 10px; align-items: center; background: var(--paper); border-radius: 10px; padding: 8px 12px; }
   .srow .nm { font-weight: 700; font-size: 15px; }
   .srow .q { font-weight: 700; color: var(--ink); font-size: 14px; line-height: 1.45; }
   .srow .m { font-size: 12.5px; color: var(--muted); }
@@ -239,8 +232,21 @@
   .use li { font-size: 12.5px; line-height: 1.55; padding-left: 12px; position: relative; }
   .use li::before { content: ""; position: absolute; left: 0; top: 0.62em; width: 5px; height: 5px; border-radius: 50%; background: var(--minus); }
 
+  /* ---------- reading the bridge (p18) ---------- */
+  .read { background: var(--paper); border-radius: 12px; padding: 7px 13px; }
+  .read .h { display: flex; gap: 8px; align-items: center; font-weight: 700; color: var(--ink); font-size: 14.5px; }
+  .read .h .n { width: 22px; height: 22px; border-radius: 50%; background: var(--ink); color: #FFFFFF; font-size: 12px; display: grid; place-items: center; flex: none; }
+  .read .h .v { margin-left: auto; font-variant-numeric: tabular-nums; }
+  .read .h .v.p { color: var(--plus); } .read .h .v.m { color: var(--minus); }
+  .read p { font-size: 13px; margin-top: 2px; line-height: 1.6; }
+  .read.hot { border: 1.5px solid var(--minus); }
+
   /* ---------- summary (p20) ---------- */
-  .tri { background: var(--paper); border-radius: 12px; padding: 10px 8px 6px; }
+  .story { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; text-align: center; }
+  .story div { display: grid; gap: 1px; }
+  .story b { font-size: 13px; }
+  .story span { font-size: 12.5px; color: var(--ink); }
+  .tri { background: var(--paper); border-radius: 12px; padding: 6px 8px 2px; }
   .tri svg { display: block; width: 100%; height: auto; }
   .tri svg text { font-family: var(--sans); }
   .mottos { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; }
@@ -253,25 +259,16 @@
 </head>
 <body>
 
-<!-- 1 · cover -->
-<section class="page cover" data-sec="">
-  <div class="eyebrow">财报入门</div>
-  <div class="big">三表联动</div>
-  <div class="sub">一家奶茶店，讲透财报勾稽关系</div>
-  <div class="chips"><span class="chip bs">资产负债表</span><span class="chip is">利润表</span><span class="chip cf">现金流量表</span></div>
-  <div class="teaser">
+<!-- 1 · hero + opening (also the feed cover) -->
+<section class="page" data-sec="">
+  <div class="hero">
+    <div class="eyebrow">财报入门</div>
+    <div class="big">三表联动</div>
+    <div class="sub">一家奶茶店，讲透财报勾稽关系</div>
     <div class="q">奶茶店一年赚了 4 万利润，<br>现金为什么只多了 3 万？</div>
-    <div class="a">看懂这个问题，三张表就串起来了。</div>
   </div>
-  <div class="motto">利润进权益 · 现金对货币 · 变动解差异</div>
-</section>
-
-<!-- 2 -->
-<section class="page" data-sec="开篇">
-  <h2>三张表，讲的是同一盘生意</h2>
   <div class="body">
-    <p>第一次翻财报，很多人会被三张表绕晕。其实它们讲的是<b>同一盘生意</b>，只是角度不同。表与表之间的数字环环相扣，会计上叫<b>“勾稽关系”</b>。</p>
-    <p>先用一句话认识它们：</p>
+    <p>三张表讲的是<b>同一盘生意</b>，数字环环相扣，会计上叫<b style="white-space:nowrap">“勾稽关系”</b>。先用一句话认识它们：</p>
     <div class="srow"><div class="nm t-bs">资产负债表</div><div><div class="q">某一天，公司有多少家底？</div><div class="m">像一张照片，拍的是某个时点</div></div></div>
     <div class="srow"><div class="nm t-is">利润表</div><div><div class="q">一段时间里，赚没赚钱？</div><div class="m">像一张成绩单，记的是一段时间</div></div></div>
     <div class="srow"><div class="nm t-cf">现金流量表</div><div><div class="q">一段时间里，真金白银进出多少？</div><div class="m">像一本银行流水，只认实收实付</div></div></div>
@@ -615,16 +612,29 @@
   </div>
 </section>
 
-<!-- 18 -->
+<!-- 17 · full bridge -->
 <section class="page" data-sec="五 · 间接法与现金流之桥">
   <h2>完整版的桥：一家典型公司</h2>
-  <div class="body" style="gap:8px">
+  <div class="body">
+    <p style="font-size:13px">示例数据（非真实公司），按年报补充资料口径 · 万元</p>
     <div class="chart">
+      <div class="key"><span><i style="background:var(--is)"></i>净利润</span><span><i style="background:var(--plus)"></i>加</span><span><i style="background:var(--minus)"></i>减</span><span><i style="background:var(--cf)"></i>经营现金流</span></div>
       <svg id="bridge-full"></svg>
     </div>
-    <div class="card ratio push">
+  </div>
+</section>
+
+<!-- 18 · reading the bridge -->
+<section class="page" data-sec="五 · 间接法与现金流之桥">
+  <h2>这座桥，该怎么读？</h2>
+  <div class="body" style="gap:6px">
+    <div class="read"><div class="h"><span class="n">1</span>不花钱的费用<span class="v p">+430</span></div><p>通常为正。折旧摊销大，多是重资产行业；减值突然变大，要查哪些资产出了问题。</p></div>
+    <div class="read"><div class="h"><span class="n">2</span>不属于经营的损益<span class="v m">−30</span></div><p>把投资、筹资的损益挪走，一般不大。若投资收益占利润大头，说明利润不靠主业。</p></div>
+    <div class="read"><div class="h"><span class="n">3</span>递延所得税<span class="v m">−20</span></div><p>通常金额很小，入门时可以先略过。</p></div>
+    <div class="read hot"><div class="h"><span class="n">4</span>营运资本变动<span class="v m">−530</span></div><p><b>最值得盯。</b>应收和存货吃掉 740，多欠供应商 210 补回一部分。年年如此，说明增长靠赊销和备货撑着。</p></div>
+    <div class="card ratio push" style="padding:8px 13px">
       <div class="big">0.85</div>
-      <p>营运资本吃掉 530。<b>净现比</b> = 850 ÷ 1,000<br><span class="muted">示例数据，非真实公司 · 单位：万元</span></p>
+      <p><b>净现比</b> = 850 ÷ 1,000。长期低于 1，要追问利润为什么没变成现金。</p>
     </div>
   </div>
 </section>
@@ -649,14 +659,19 @@
 <!-- 20 -->
 <section class="page" data-sec="写在最后">
   <h2>一张图记住三表联动</h2>
-  <div class="body">
+  <div class="body" style="gap:7px">
     <div class="tri"><svg id="tri" viewBox="0 0 352 170"></svg></div>
-    <div class="card mottos">
+    <div class="card mottos" style="padding:8px 10px">
       <div><span class="n">1</span><span>利润进权益</span></div>
       <div><span class="n">2</span><span>现金对货币</span></div>
       <div><span class="n">3</span><span>变动解差异</span></div>
     </div>
-    <div class="dark push">
+    <div class="card story" style="padding:8px 10px">
+      <div><b class="t-bs">资产负债表</b><span>家底有多厚</span></div>
+      <div><b class="t-is">利润表</b><span>本事有多大</span></div>
+      <div><b class="t-cf">现金流量表</b><span>日子紧不紧</span></div>
+    </div>
+    <div class="dark push" style="padding:10px 14px">
       <p class="quote" style="color:#FFFFFF">利润是观点，现金是事实。</p>
       <p style="font-size:12.5px;text-align:center;color:#DCE3EC;margin-top:4px">下次翻财报，先拿这三条线核一核。</p>
     </div>
@@ -674,7 +689,8 @@
     top.className = 'top';
     top.innerHTML = '<span>财报入门 · 三表联动</span><span class="num">' + n + ' / ' + total + '</span>';
     var sec = pg.getAttribute('data-sec');
-    pg.insertBefore(top, pg.firstChild);
+    var host = pg.querySelector('.hero') || pg;
+    host.insertBefore(top, host.firstChild);
     if (sec) {
       var s = document.createElement('div');
       s.className = 'sec';
@@ -754,7 +770,7 @@ waterfall(document.getElementById('bridge-full'), [
   { type: 'delta', label: '经营性应付增加', value: 210 },
   { type: 'group', label: '' },
   { type: 'total', label: '经营活动现金流', value: 850, color: '--cf' }
-], { width: 344, min: 0, max: 1600, ticks: [0, 400, 800, 1200, 1600], labelW: 118, rowH: 18, barH: 12, font: 12, groupH: 17 });
+], { width: 344, min: 0, max: 1600, ticks: [0, 400, 800, 1200, 1600], labelW: 118, rowH: 20, barH: 13, font: 12.5, groupH: 18 });
 
 /* summary triangle: three statements and the three linkage lines */
 (function () {
