@@ -60,13 +60,15 @@ html, body {{ margin: 0; background: #fff; }}
   display: flex; justify-content: space-between; gap: 12px; font-size: 11.5px; color: #a8927f; }}
 
 .body {{ padding: 10px 22px 0; }}
+.lp-native {{ margin: 0; }}
 .lp-lead {{ margin: 22px 0 14px; font-size: 16.5px; line-height: 1.8; color: {INK}; font-weight: 500; }}
 .lp-p {{ margin: 0 0 13px; font-size: 15px; line-height: 1.85; letter-spacing: .3px; color: {BODY}; text-align: justify; }}
 .lp-p strong, .lp-key strong {{ color: {INK}; }}
 .lp-p strong.hl, .lp-lead strong.hl {{ color: {SOY}; }}
-.lp-sec {{ display: flex; align-items: baseline; gap: 12px; margin: 42px 0 16px; padding-bottom: 10px; border-bottom: 1px solid {RULE}; }}
+.lp-sec {{ display: flex; align-items: flex-start; gap: 12px; margin: 42px 0 16px; padding-bottom: 10px; border-bottom: 1px solid {RULE}; }}
 .lp-sec .no {{ font-family: "{NUM}", sans-serif; font-weight: 700; font-size: 36px; color: {SOY}; line-height: 1; }}
 .lp-sec h2 {{ margin: 0; font-size: 20px; line-height: 1.4; font-weight: 700; text-wrap: balance; }}
+.lp-sec .kicker {{ margin: 4px 0 0; font-size: 13px; line-height: 1.6; color: {MUTED}; }}
 .lp-fig {{ margin: 16px 0 20px; border: 1px solid {RULE}; border-radius: 10px; padding: 16px 14px 14px; }}
 .lp-fig figcaption {{ margin: 0 0 12px; }}
 .lp-fig figcaption > b {{ display: block; font-size: 16.5px; line-height: 1.45; text-wrap: balance; }}
@@ -95,15 +97,6 @@ def scope(css: str, prefix: str) -> str:
     return "\n".join(out)
 
 
-def inner_text(line: str) -> str:
-    """取一行 <p ...>…</p> 的内容，把行内样式的 strong 换成类名。"""
-    m = re.match(r"\s*<p[^>]*>(.*)</p>\s*$", line)
-    s = m.group(1) if m else line
-    s = re.sub(r'<strong style="color:#8c3510;">', '<strong class="hl">', s)
-    s = re.sub(r'<strong style="[^"]*">', "<strong>", s)
-    return s
-
-
 def figure(no: int, used_css: dict, section_title: str = "") -> str:
     c = bi.COMPONENTS[no]
     used_css[no] = scope(c["css"], f".c{no}") if c["css"] else ""
@@ -114,45 +107,50 @@ def figure(no: int, used_css: dict, section_title: str = "") -> str:
     return f'<figure class="lp-fig c{no}" data-break="fig"><figcaption>{title}{sub}</figcaption>{c["inner"]}</figure>'
 
 
+def _attr(line: str, name: str) -> str:
+    m = re.search(rf'{name}="([^"]*)"', line)
+    return m.group(1) if m else ""
+
+
+def _clean(fragment: str) -> str:
+    fragment = re.sub(r'<strong style="color:#8c3510;">', '<strong class="hl">', fragment)
+    return re.sub(r'<strong style="[^"]*">', "<strong>", fragment)
+
+
 def article_body(used_css: dict) -> str:
+    """按 index.html 里每块的 data-role 排版：正文一块一行，长图和预览页共用同一份文字。"""
     src = (HERE / "index.html").read_text(encoding="utf-8")
     art = src[src.index('<article class="paper" id="article">'):src.index("</article>")]
-    lines = [ln for ln in art.splitlines()[1:] if ln.strip()]
-    out, i, first, sec_title = [], 0, True, ""
-    while i < len(lines):
-        ln = lines[i].strip()
-        if "<img" in ln:
-            no = int(re.search(r'data-file="(\d+)_', ln).group(1))
+    lines = [ln.strip() for ln in art.splitlines()[1:] if ln.strip()]
+    out, sec_title = [], ""
+    for ln in lines:
+        role = _attr(ln, "data-role")
+        ps = re.findall(r"<p[^>]*>(.*?)</p>", ln)
+        if role == "hero":
+            continue  # 长图有自己的头图
+        if role == "sec":
+            sec_title = ps[1]
+            out.append(f'<div class="lp-sec" data-break="sec"><span class="no">{_attr(ln, "data-no")}</span>'
+                       f'<div><h2>{sec_title}</h2><p class="kicker">{_attr(ln, "data-kicker")}</p></div></div>')
+        elif role == "fig":
+            no = int(re.match(r"(\d+)_", _attr(ln, "data-file")).group(1))
             out.append(figure(no, used_css, sec_title))
-        elif ln.startswith('<p style="margin:44px 0 4px'):
-            no = inner_text(ln)
-            title = inner_text(lines[i + 1])
-            sec_title = title
-            out.append(f'<div class="lp-sec" data-break="sec"><span class="no">{no}</span><h2>{title}</h2></div>')
-            i += 1
-        elif ln.startswith('<section style="margin:0 0 20px;padding:14px 16px'):
-            ps = re.findall(r"<p[^>]*>(.*?)</p>", ln)
-            body = re.sub(r'<strong style="[^"]*">', "<strong>", ps[-1])
-            out.append(f'<div class="lp-key"><b>划重点</b><p>{body}</p></div>')
-        elif ln.startswith('<section style="margin:40px 0 0'):
-            j, foot = i + 1, []
-            while not lines[j].strip().startswith("</section>"):
-                foot.append(f"<p>{inner_text(lines[j])}</p>")
-                j += 1
-            foot.append(
-                "<p><strong>主要来源：</strong>海天味业 2019—2025 年年度报告及摘要、2024 与 2025 年度审计报告、"
-                "2025 年度利润分配与权益分派公告；行情数据来自雪球。</p>"
-                '<div class="lp-end"><span>海天味业 · 七年财报拆解</span><span>勾稽 60/60 ✓</span></div>'
-            )
-            out.append(f'<div class="lp-foot" data-break="sec">{"".join(foot)}</div>')
-            i = j
-        elif ln.startswith('<p style="margin:0 0 20px;font-size:14px'):
-            out.append(f'<p class="lp-small">{inner_text(ln)}</p>')
-        elif ln.startswith("<p"):
-            cls = "lp-lead" if first else "lp-p"
-            first = False
-            out.append(f'<p class="{cls}">{inner_text(ln)}</p>')
-        i += 1
+        elif role == "key":
+            out.append(f'<div class="lp-key"><b>划重点</b><p>{_clean(ps[-1])}</p></div>')
+        elif role in ("native", "quote"):
+            out.append(f'<div class="lp-native" data-break="fig">{ln}</div>')
+        elif role == "foot":
+            foot = "".join(f"<p>{_clean(x)}</p>" for x in ps)
+            foot += ("<p><strong>主要来源：</strong>海天味业 2019—2025 年年度报告及摘要、2024 与 2025 年度审计报告、"
+                     "2025 年度利润分配与权益分派公告；行情数据来自雪球。</p>"
+                     '<div class="lp-end"><span>海天味业 · 七年财报拆解</span><span>勾稽 60/60 ✓</span></div>')
+            out.append(f'<div class="lp-foot" data-break="sec">{foot}</div>')
+        elif role == "small":
+            out.append(f'<p class="lp-small">{_clean(ps[0])}</p>')
+        elif role in ("lead", "p"):
+            out.append(f'<p class="lp-{role}">{_clean(ps[0])}</p>')
+        else:
+            raise ValueError(f"index.html 里有未知的块：{ln[:80]}")
     return "\n".join(out)
 
 
