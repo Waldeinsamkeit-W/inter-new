@@ -162,12 +162,12 @@
       <button type="button" class="primary" id="copyArticle">复制正文（带排版）</button>
       <span class="status" id="status" role="status" aria-live="polite"></span>
     </div>
-    <p class="hint">复制后直接粘贴到公众号编辑器的正文区。图片不会随文字一起过去：正文里会留一个“在这里插入图片”的提示框，把下方的关系图保存下来，在提示框处插入即可。</p>
+    <p class="hint">复制后直接粘贴到公众号编辑器的正文区。图片不会随文字一起过去：正文里会在每张图的位置留一个“在这里插入图片”的提示框（共 7 张），把对应图片保存下来，在提示框处插入即可。</p>
   </header>
 
   <main class="phone">
     <h1 class="post-title">一家奶茶店，讲透财报“三表联动”</h1>
-    <p class="post-meta">财报入门 · 约 5 分钟读完</p>
+    <p class="post-meta">财报入门 · 约 8 分钟读完</p>
 
     <article id="article" class="post">
       <p>第一次翻财报，很多人会被三张表绕晕：资产负债表、利润表、现金流量表，每张都密密麻麻。</p>
@@ -290,30 +290,42 @@
       <p class="note"><strong>小提醒：</strong>上市公司的这两个数常常不完全相等。差额一般是<strong>受限资金</strong>，比如银行承兑汇票保证金、被冻结的存款。它们算在货币资金里，但不能随便动用，所以不算“现金及现金等价物”。差额的原因可以在财报附注里找到；如果差额很大又说不清，就要多留个心眼。</p>
 
       <h3>第 ③ 条：利润表 → 现金流量表<span class="sub">从净利润，推出经营现金流</span></h3>
-      <p>奶茶店赚了 4 万利润，经营活动却只流入 3 万现金。少的 1 万去哪了？</p>
-      <p>答案藏在资产负债表的变动里：</p>
-      <div class="tbl-wrap">
-        <table class="tbl-adj">
-          <thead><tr><th>项目</th><th class="num">金额</th><th>为什么</th></tr></thead>
-          <tbody>
-            <tr><td>净利润</td><td class="num">4</td><td class="why">起点</td></tr>
-            <tr><td>加：折旧</td><td class="num">+1</td><td class="why">记了费用，但没花钱</td></tr>
-            <tr><td>减：应收账款增加</td><td class="num">−2</td><td class="why">记了收入，钱还没收回</td></tr>
-            <tr><td>减：存货增加</td><td class="num">−1</td><td class="why">钱花了，货还在店里</td></tr>
-            <tr><td>加：应付账款增加</td><td class="num">+1</td><td class="why">记了成本，钱还没付</td></tr>
-            <tr class="total"><td>经营活动现金流</td><td class="num">3</td><td class="why">和现金流量表一致 <span class="ok">✓</span></td></tr>
-          </tbody>
-        </table>
-      </div>
-      <p>这种从净利润倒推经营现金流的方法叫<strong>“间接法”</strong>。上市公司年报里，现金流量表的<strong>补充资料</strong>就是这么一步步推出来的。</p>
-      <p>调整的规律只有三句：</p>
-      <ul>
-        <li><strong>不花钱的费用</strong>（折旧、摊销、减值）：加回来</li>
-        <li><strong>经营性资产增加</strong>（应收、存货变多）：钱被占用了，减掉</li>
-        <li><strong>经营性负债增加</strong>（应付变多）：别人帮你垫了钱，加上</li>
-      </ul>
+      <p>奶茶店赚了 4 万利润，经营活动却只流入 3 万现金。少的 1 万去哪了？答案藏在资产负债表的变动里：</p>
+      <p class="formula">净利润 4 + 折旧 1 − 应收增加 2 − 存货增加 1 + 应付增加 1 = 3</p>
+      <p>结果和现金流量表算出的经营现金流一样 <span class="ok">✓</span> 这种从净利润倒推经营现金流的方法叫<strong>“间接法”</strong>，第五节会用图把它一步步拆开。</p>
 
-      <h2>四、一张图记住三表联动</h2>
+      <h2>四、底层逻辑：三张表为什么一定对得上？</h2>
+      <p>前面讲了三条线“是什么”。很多人卡在“为什么”：凭什么三张不同的表，数字就一定对得上？</p>
+      <p>答案藏在资产负债表本身。</p>
+      <figure class="fig">
+        <img src="images/01-logic.png" data-file="images/01-logic.png" data-name="图解1：三张表其实是一张表" alt="图解1：资产负债表是年初年末两张照片，现金流量表解释货币资金从0到11，利润表解释未分配利润从0到3" width="1080" height="2716">
+      </figure>
+      <p>现金流量表讲“货币资金”怎么变，利润表讲“未分配利润”怎么变。它们都是从资产负债表里<strong>拆出来的明细</strong>。</p>
+      <p>再往下一层是<strong>复式记账</strong>：每笔业务都同时记在两个地方。把奶茶店的 8 笔业务逐笔拆开看：</p>
+      <figure class="fig">
+        <img src="images/02-trace.png" data-file="images/02-trace.png" data-name="图解2：一笔业务三张表一起动" alt="图解2：奶茶店8笔业务逐笔对应资产负债表、利润表、现金流量表的变动" width="1080" height="2508">
+      </figure>
+      <p>最后，把会计恒等式移一下项，间接法就自己“长”出来了：</p>
+      <figure class="fig">
+        <img src="images/03-derivation.png" data-file="images/03-derivation.png" data-name="图解3：间接法就是恒等式变个形" alt="图解3：从资产等于负债加所有者权益，推导出现金变动等于净利润减非现金资产变动加负债变动" width="1080" height="2911">
+      </figure>
+
+      <h2>五、间接法详解：从净利润到经营现金流</h2>
+      <p>年报里的<strong>现金流量表补充资料</strong>，会把净利润一步步调成经营现金流。调整项看着多，其实只有四类：</p>
+      <figure class="fig">
+        <img src="images/04-indirect.png" data-file="images/04-indirect.png" data-name="图解4：间接法四类调整" alt="图解4：间接法四类调整：不花钱的费用加回、非经营损益剔除、递延所得税调整、营运资本变动" width="1080" height="3453">
+      </figure>
+      <p>放回奶茶店，这座从净利润到经营现金流的“桥”是这样走的：</p>
+      <figure class="fig">
+        <img src="images/05-bridge-shop.png" data-file="images/05-bridge-shop.png" data-name="图解5：奶茶店的净利润到现金流之桥" alt="图解5：奶茶店净利润4，加折旧1，减应收增加2，减存货增加1，加应付增加1，得到经营现金流3" width="1080" height="2365">
+      </figure>
+      <p>换成一家典型公司（示例数据），四类调整都会出现：</p>
+      <figure class="fig">
+        <img src="images/06-bridge-full.png" data-file="images/06-bridge-full.png" data-name="图解6：完整版的净利润到现金流之桥" alt="图解6：示例公司净利润1000，经过四类调整得到经营现金流850，营运资本变动减少530" width="1080" height="3038">
+      </figure>
+      <p>读这座桥，最该盯的是<strong>营运资本</strong>。如果它年年大额为负，说明增长靠赊销和备货撑着，利润迟迟变不成现金。</p>
+
+      <h2>六、一张图记住三表联动</h2>
       <figure class="fig">
         <img src="images/linkage.png" data-file="images/linkage.png" data-name="三表联动关系图" alt="三表联动关系图：利润表的净利润减分红进入资产负债表的未分配利润；现金流量表的期末现金等于资产负债表的货币资金；净利润加减调整项得到经营现金流" width="1080" height="1560">
         <figcaption>三表联动关系图（单位：万元）</figcaption>
@@ -327,7 +339,7 @@
       <p>浓缩成一句口诀：</p>
       <p class="motto">利润进权益，现金对货币，变动解差异</p>
 
-      <h2>五、学会勾稽，能用来做什么？</h2>
+      <h2>七、学会勾稽，能用来做什么？</h2>
 
       <h3>1. 检查账做得对不对</h3>
       <p>三条线只要有一条对不上，账一定有错。会计编完报表，第一件事就是核对勾稽关系。</p>

@@ -1,0 +1,508 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<title>图解三表勾稽 · 图片源文件</title>
+<!--
+  六张图解的源文件。用 render-posters.js 渲染成 PNG（每张 1080px 宽）。
+  例子数据：奶茶店第一年（单位：万元），与正文一致；第 6 张为示例公司数据。
+-->
+<style>
+  :root {
+    --desk: #F4F6F9;
+    --paper: #FFFFFF;
+    --ink: #1F2A37;
+    --text: #333C48;
+    --muted: #667080;
+    --line: #DDE3EA;
+    --soft: #EEF1F5;
+    --bs: #2D5B9A;  --bs-tint: #EAF0F8;   /* 资产负债表 */
+    --is: #B86A12;  --is-tint: #FBF1E4;   /* 利润表 */
+    --cf: #23806A;  --cf-tint: #E6F3EF;   /* 现金流量表 */
+    --plus: #3B7DC4;                      /* 桥：加 */
+    --minus: #D9634A;                     /* 桥：减 */
+    --sans: "Noto Sans SC", "WenQuanYi Zen Hei", "PingFang SC", "Microsoft YaHei", sans-serif;
+    --serif: "Noto Serif SC", "Noto Sans SC", "WenQuanYi Zen Hei", serif;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; padding: 20px; background: #C9CED6; font-family: var(--sans); display: grid; gap: 20px; justify-content: start; }
+
+  .poster { width: 400px; background: var(--desk); padding: 26px 14px 18px; color: var(--text); font-size: 14px; line-height: 1.65; }
+  .tag { display: flex; justify-content: space-between; font-size: 11.5px; letter-spacing: 0.12em; color: var(--muted); }
+  h1 { font-family: var(--serif); font-weight: 900; font-size: 26px; line-height: 1.3; color: var(--ink); margin: 10px 0 8px; letter-spacing: 0.02em; text-wrap: balance; }
+  .lede { margin: 0 0 16px; font-size: 14.5px; color: var(--text); }
+  .lede b, .card b { color: var(--ink); font-weight: 700; }
+  .stack { display: grid; gap: 10px; }
+  .card { background: var(--paper); border-radius: 12px; padding: 13px 14px; }
+  .card p { margin: 0; }
+  .card p + p { margin-top: 6px; }
+  .k { font-size: 12px; font-weight: 700; letter-spacing: 0.1em; color: var(--muted); margin-bottom: 6px; }
+  .num { font-variant-numeric: tabular-nums; }
+  .muted { color: var(--muted); }
+  .t-bs { color: var(--bs); } .t-is { color: var(--is); } .t-cf { color: var(--cf); }
+  .foot { margin-top: 14px; padding-top: 9px; border-top: 1px solid var(--line); font-size: 11.5px; color: var(--muted); display: flex; justify-content: space-between; gap: 10px; }
+  .ok { color: var(--cf); font-weight: 700; }
+
+  /* ---------- 1. 三张表其实是一张表 ---------- */
+  .sheet { background: var(--paper); border: 1.5px solid var(--bs); border-radius: 12px; padding: 11px 12px 12px; }
+  .sheet-head { display: flex; justify-content: space-between; align-items: baseline; font-size: 13px; margin-bottom: 8px; }
+  .sheet-head b { color: var(--bs); font-size: 14.5px; }
+  .pair { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+  .cell { border-radius: 8px; padding: 7px 10px; background: var(--bs-tint); display: flex; justify-content: space-between; align-items: baseline; }
+  .cell span { font-size: 13.5px; color: var(--ink); }
+  .cell strong { font-size: 22px; font-weight: 900; line-height: 1.2; }
+  .others { margin-top: 8px; font-size: 12px; color: var(--muted); line-height: 1.6; }
+  .bridges { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+  .lane { display: grid; justify-items: center; }
+  .down { width: 2px; height: 18px; background: var(--ink); position: relative; margin-bottom: 6px; }
+  .down::after { content: ""; position: absolute; left: -5px; bottom: -6px; border-left: 6px solid transparent; border-right: 6px solid transparent; border-top: 7px solid var(--ink); }
+  .lane .down:last-child { margin: 0 0 6px; }
+  .bridge { width: 100%; border-radius: 10px; padding: 9px 11px; border: 1.5px solid; }
+  .bridge.cf { background: var(--cf-tint); border-color: var(--cf); }
+  .bridge.is { background: var(--is-tint); border-color: var(--is); }
+  .bridge .name { font-weight: 700; font-size: 15px; }
+  .bridge .q { font-size: 12px; color: var(--muted); margin-bottom: 4px; }
+  .bridge ul { list-style: none; margin: 0; padding: 0; font-size: 13.5px; }
+  .bridge li { display: flex; justify-content: space-between; color: var(--ink); }
+  .bridge li.sum { border-top: 1px solid rgba(31, 42, 55, 0.25); margin-top: 3px; padding-top: 3px; font-weight: 700; }
+  .eq { font-size: 15px; color: var(--ink); }
+  .eq + .eq { margin-top: 6px; }
+
+  /* ---------- 2. 逐笔追踪 ---------- */
+  .legend { display: flex; flex-wrap: wrap; gap: 6px; margin: -4px 0 12px; }
+  .chip { font-size: 12px; padding: 2px 9px; border-radius: 999px; font-weight: 700; }
+  .chip.bs { background: var(--bs-tint); color: var(--bs); }
+  .chip.is { background: var(--is-tint); color: var(--is); }
+  .chip.cf { background: var(--cf-tint); color: var(--cf); }
+  table.trace { width: 100%; border-collapse: separate; border-spacing: 0; background: var(--paper); border-radius: 12px; overflow: hidden; font-size: 12.5px; line-height: 1.5; font-variant-numeric: tabular-nums; }
+  .trace th { font-size: 12px; color: #FFFFFF; font-weight: 700; padding: 7px 6px; text-align: left; white-space: nowrap; }
+  .trace th.c-biz { background: var(--ink); }
+  .trace th.c-bs { background: var(--bs); }
+  .trace th.c-is { background: var(--is); }
+  .trace th.c-cf { background: var(--cf); }
+  .trace td { padding: 7px 6px; border-top: 1px solid var(--line); vertical-align: top; color: var(--ink); }
+  .trace td.biz { color: var(--text); }
+  .trace td.biz i { font-style: normal; display: inline-block; width: 16px; font-weight: 700; color: var(--ink); }
+  .trace td.biz small { display: block; font-size: 11px; color: var(--muted); padding-left: 16px; }
+  .trace td.bs { background: #F7F9FC; word-break: keep-all; }
+  .trace td.is, .trace td.cf { white-space: nowrap; }
+  .trace .eqs { color: var(--bs); font-weight: 700; padding: 0 1px; }
+  .trace .none { color: #B4BBC5; }
+  .trace .hl td.is, .trace .hl td.cf { font-weight: 700; }
+  .trace tr.total td { border-top: 2px solid var(--ink); font-weight: 700; background: var(--soft); }
+  .trace col.biz { width: 80px; } .trace col.bs { width: auto; } .trace col.is { width: 68px; } .trace col.cf { width: 74px; }
+  .obs { display: grid; gap: 7px; }
+  .obs div { display: grid; grid-template-columns: 20px 1fr; gap: 4px; font-size: 13.5px; }
+  .obs em { font-style: normal; font-weight: 900; color: var(--ink); }
+
+  /* ---------- 3. 推导 ---------- */
+  .steps { display: grid; gap: 8px; }
+  .step { display: grid; grid-template-columns: 26px 1fr; gap: 10px; background: var(--paper); border-radius: 12px; padding: 11px 12px; align-items: start; }
+  .step .n { width: 26px; height: 26px; border-radius: 50%; background: var(--ink); color: #FFFFFF; font-size: 13px; font-weight: 700; display: grid; place-items: center; }
+  .step .f { font-size: 15px; font-weight: 700; color: var(--ink); line-height: 1.55; word-break: keep-all; }
+  .step .why { font-size: 12.5px; color: var(--muted); margin-top: 2px; }
+  .step.final { border: 1.5px solid var(--ink); }
+  .split { background: var(--paper); border-radius: 12px; overflow: hidden; }
+  .split-head { background: var(--cf); color: #FFFFFF; padding: 8px 12px; font-weight: 700; font-size: 14px; display: flex; justify-content: space-between; }
+  .grp { padding: 9px 12px; border-top: 1px solid var(--line); }
+  .grp:first-of-type { border-top: 0; }
+  .grp-h { display: flex; justify-content: space-between; font-weight: 700; color: var(--ink); font-size: 14px; }
+  .grp-b { font-size: 13px; color: var(--text); margin-top: 2px; }
+  .grp-b .src { color: var(--muted); font-size: 11.5px; }
+  .rules { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+  .rule { border-radius: 10px; padding: 10px 11px; background: var(--paper); }
+  .rule .r1 { font-size: 13px; color: var(--text); }
+  .rule .r2 { font-size: 18px; font-weight: 900; margin-top: 2px; }
+  .rule.minus .r2 { color: var(--minus); }
+  .rule.plus .r2 { color: var(--plus); }
+  .rule .r3 { font-size: 11.5px; color: var(--muted); }
+
+  /* ---------- 4. 四类调整 ---------- */
+  .start-bar, .end-bar { border-radius: 10px; padding: 9px 12px; display: flex; justify-content: space-between; align-items: center; font-weight: 700; font-size: 15px; }
+  .start-bar { background: var(--is-tint); color: var(--is); border: 1.5px solid var(--is); }
+  .end-bar { background: var(--cf); color: #FFFFFF; }
+  .start-bar small, .end-bar small { font-weight: 400; font-size: 12px; opacity: 0.85; }
+  .adj { background: var(--paper); border-radius: 12px; padding: 12px 13px; }
+  .adj-h { display: flex; align-items: center; gap: 8px; }
+  .adj-h .n { width: 24px; height: 24px; border-radius: 50%; background: var(--ink); color: #FFFFFF; font-size: 12.5px; font-weight: 700; display: grid; place-items: center; flex: none; }
+  .adj-h .t { font-weight: 700; font-size: 15.5px; color: var(--ink); flex: 1; }
+  .act { font-size: 12px; font-weight: 700; padding: 2px 9px; border-radius: 999px; background: var(--soft); color: var(--ink); white-space: nowrap; }
+  .act.plus { background: #E7F0FA; color: var(--plus); }
+  .adj ul { margin: 8px 0 0; padding: 0; list-style: none; display: grid; gap: 3px; }
+  .adj li { font-size: 13px; color: var(--ink); display: grid; grid-template-columns: 1fr auto; gap: 8px; }
+  .adj li span:last-child { color: var(--muted); font-size: 12px; white-space: nowrap; }
+  .adj .why { margin-top: 7px; padding-top: 7px; border-top: 1px dashed var(--line); font-size: 12.5px; color: var(--muted); }
+  .adj .why b { color: var(--text); }
+  .flow-arrow { justify-self: center; width: 2px; height: 12px; background: var(--muted); }
+
+  /* ---------- 5/6. 桥 ---------- */
+  .chart { background: var(--paper); border-radius: 12px; padding: 12px 12px 6px; }
+  .chart svg { display: block; width: 100%; height: auto; overflow: visible; }
+  .chart svg text { font-family: var(--sans); }
+  .key { display: flex; gap: 14px; font-size: 12px; color: var(--muted); margin-bottom: 4px; flex-wrap: wrap; }
+  .key span { display: inline-flex; align-items: center; gap: 5px; }
+  .key i { width: 10px; height: 10px; border-radius: 2px; display: inline-block; }
+  .gap-math { font-size: 13.5px; color: var(--ink); }
+  .gap-math .row { display: flex; justify-content: space-between; padding: 3px 0; border-bottom: 1px dashed var(--line); }
+  .gap-math .row:last-child { border-bottom: 0; font-weight: 700; }
+  .ratio { display: grid; grid-template-columns: auto 1fr; gap: 12px; align-items: center; }
+  .ratio .big { font-size: 34px; font-weight: 900; color: var(--cf); line-height: 1; font-variant-numeric: tabular-nums; }
+  .ratio p { font-size: 13px; }
+  .reads { display: grid; gap: 6px; }
+  .reads > div:not(.k) { display: grid; grid-template-columns: 22px 1fr; font-size: 13px; }
+  .reads em { font-style: normal; font-weight: 700; color: var(--ink); }
+</style>
+</head>
+<body>
+
+<!-- ======================= 1 ======================= -->
+<section class="poster" id="p1">
+  <div class="tag"><span>图解三表勾稽 · 底层逻辑</span><span>1 / 6</span></div>
+  <h1>三张表，其实是一张表</h1>
+  <p class="lede">资产负债表是年初、年末两张“照片”。另外两张表，解释的是照片里<b>两个科目</b>为什么变了。</p>
+
+  <div class="stack">
+    <div class="sheet">
+      <div class="sheet-head"><b>资产负债表 · 年初</b><span class="muted">开业前，全是 0</span></div>
+      <div class="pair">
+        <div class="cell"><span>货币资金</span><strong class="t-cf num">0</strong></div>
+        <div class="cell"><span>未分配利润</span><strong class="t-is num">0</strong></div>
+      </div>
+    </div>
+
+    <div class="bridges">
+      <div class="lane">
+        <div class="down"></div>
+        <div class="bridge cf">
+          <div class="name t-cf">现金流量表</div>
+          <div class="q">讲“货币资金”怎么变</div>
+          <ul class="num">
+            <li><span>经营活动</span><span>+3</span></li>
+            <li><span>投资活动</span><span>−6</span></li>
+            <li><span>筹资活动</span><span>+14</span></li>
+            <li class="sum"><span>现金增加</span><span>+11</span></li>
+          </ul>
+        </div>
+        <div class="down" style="margin-top:6px"></div>
+      </div>
+      <div class="lane">
+        <div class="down"></div>
+        <div class="bridge is">
+          <div class="name t-is">利润表</div>
+          <div class="q">讲“未分配利润”怎么变</div>
+          <ul class="num">
+            <li><span>净利润</span><span>+4</span></li>
+            <li><span>分红<sup>*</sup></span><span>−1</span></li>
+            <li><span>&nbsp;</span><span>&nbsp;</span></li>
+            <li class="sum"><span>增加</span><span>+3</span></li>
+          </ul>
+        </div>
+        <div class="down" style="margin-top:6px"></div>
+      </div>
+    </div>
+
+    <div class="sheet">
+      <div class="sheet-head"><b>资产负债表 · 年末</b><span class="muted">一年后</span></div>
+      <div class="pair">
+        <div class="cell"><span>货币资金</span><strong class="t-cf num">11</strong></div>
+        <div class="cell"><span>未分配利润</span><strong class="t-is num">3</strong></div>
+      </div>
+      <div class="others">其余科目：应收 2 · 存货 1 · 固定资产 5 · 借款 5 · 应付 1 · 实收资本 10</div>
+    </div>
+
+    <div class="card">
+      <div class="k">一句话</div>
+      <p class="eq"><b class="t-cf">现金流量表</b> = “货币资金”的变动明细</p>
+      <p class="eq"><b class="t-is">利润表</b> = “未分配利润”的变动明细</p>
+      <p style="margin-top:8px;font-size:13.5px">两张表都是从资产负债表里“拆”出来的，所以数字一定对得上。</p>
+    </div>
+
+    <div class="card">
+      <div class="k">地基：复式记账</div>
+      <p style="font-size:13.5px">每笔业务至少记两处，有增必有减、或者同增同减，所以 <b>资产 = 负债 + 所有者权益</b> 永远成立。下一张图逐笔拆给你看。</p>
+    </div>
+  </div>
+
+  <div class="foot"><span>例：奶茶店第一年 · 单位：万元</span><span>* 分红属于利润分配，不在利润表内</span></div>
+</section>
+
+<!-- ======================= 2 ======================= -->
+<section class="poster" id="p2">
+  <div class="tag"><span>图解三表勾稽 · 逐笔追踪</span><span>2 / 6</span></div>
+  <h1>一笔业务，三张表一起动</h1>
+  <p class="lede">把奶茶店的 8 笔业务逐笔拆开。资产负债表一栏里，<b>“＝”左边是资产，右边是负债和权益</b>。</p>
+  <div class="legend"><span class="chip bs">资产负债表：每笔都动</span><span class="chip is">利润表：碰到收入费用才动</span><span class="chip cf">现金流量表：碰到现金才动</span></div>
+
+  <table class="trace">
+    <colgroup><col class="biz"><col class="bs"><col class="is"><col class="cf"></colgroup>
+    <thead><tr><th class="c-biz">业务</th><th class="c-bs">资产负债表</th><th class="c-is">利润表</th><th class="c-cf">现金流量表</th></tr></thead>
+    <tbody>
+      <tr><td class="biz"><i>1</i>股东投入</td><td class="bs">现金 +10 <span class="eqs">＝</span> 实收资本 +10</td><td class="is none">—</td><td class="cf t-cf">筹资 +10</td></tr>
+      <tr><td class="biz"><i>2</i>银行借款</td><td class="bs">现金 +5 <span class="eqs">＝</span> 借款 +5</td><td class="is none">—</td><td class="cf t-cf">筹资 +5</td></tr>
+      <tr><td class="biz"><i>3</i>买设备</td><td class="bs">设备 +6，现金 −6 <span class="eqs">＝</span> 0</td><td class="is none">—</td><td class="cf t-cf">投资 −6</td></tr>
+      <tr><td class="biz"><i>4</i>进原料<small>赊 1 万</small></td><td class="bs">存货 +4，现金 −3 <span class="eqs">＝</span> 应付 +1</td><td class="is none">—</td><td class="cf t-cf">经营 −3</td></tr>
+      <tr><td class="biz"><i>5</i>卖奶茶<small>赊 2 万</small></td><td class="bs">现金 +10，应收 +2 <span class="eqs">＝</span> 未分配利润 +12</td><td class="is t-is">收入 +12</td><td class="cf t-cf">经营 +10</td></tr>
+      <tr><td class="biz"><i></i>结转成本<small>用掉原料</small></td><td class="bs">存货 −3 <span class="eqs">＝</span> 未分配利润 −3</td><td class="is t-is">成本 −3</td><td class="cf none">—</td></tr>
+      <tr><td class="biz"><i>6</i>房租工资</td><td class="bs">现金 −4 <span class="eqs">＝</span> 未分配利润 −4</td><td class="is t-is">费用 −4</td><td class="cf t-cf">经营 −4</td></tr>
+      <tr><td class="biz"><i>7</i>设备折旧</td><td class="bs">设备 −1 <span class="eqs">＝</span> 未分配利润 −1</td><td class="is t-is">折旧 −1</td><td class="cf none">—</td></tr>
+      <tr><td class="biz"><i>8</i>分红</td><td class="bs">现金 −1 <span class="eqs">＝</span> 未分配利润 −1</td><td class="is none">—</td><td class="cf t-cf">筹资 −1</td></tr>
+      <tr class="total"><td class="biz">合计</td><td class="bs">资产 +19 <span class="eqs">＝</span> 负债 +6，权益 +13</td><td class="is t-is">净利润 4</td><td class="cf t-cf">现金 +11</td></tr>
+    </tbody>
+  </table>
+
+  <div class="card obs" style="margin-top:10px">
+    <div><em>①</em><span>每一行“＝”两边都相等，所以资产负债表<b>永远是平的</b>。</span></div>
+    <div><em>②</em><span>利润表那一栏，正好是“未分配利润”那几笔；现金流量表那一栏，正好是“现金”那几笔。</span></div>
+    <div><em>③</em><span>经营业务里利润和现金对不上的，只有<b>应收、存货、应付、折旧</b>。它们就是间接法的调整项（见第 5 张）。</span></div>
+  </div>
+
+  <div class="foot"><span>例：奶茶店第一年 · 单位：万元</span><span>不考虑税费和利息</span></div>
+</section>
+
+<!-- ======================= 3 ======================= -->
+<section class="poster" id="p3">
+  <div class="tag"><span>图解三表勾稽 · 公式推导</span><span>3 / 6</span></div>
+  <h1>间接法，就是恒等式变个形</h1>
+  <p class="lede">从净利润推出现金流，不是什么技巧，而是把会计恒等式<b>移一下项</b>。Δ 读作“变动”。</p>
+
+  <div class="steps">
+    <div class="step"><div class="n">1</div><div><div class="f">资产 = 负债 + 所有者权益</div><div class="why">复式记账保证它永远成立</div></div></div>
+    <div class="step"><div class="n">2</div><div><div class="f">现金 + 非现金资产 = 负债 + 所有者权益</div><div class="why">把资产拆成两块</div></div></div>
+    <div class="step"><div class="n">3</div><div><div class="f">现金 = 负债 + 所有者权益 − 非现金资产</div><div class="why">移项，把现金单独放左边</div></div></div>
+    <div class="step"><div class="n">4</div><div><div class="f">Δ现金 = Δ负债 + Δ所有者权益 − Δ非现金资产</div><div class="why">年初、年末各算一次，相减</div></div></div>
+    <div class="step final"><div class="n">5</div><div><div class="f">Δ现金 = 净利润 − Δ非现金资产 + Δ负债 + 股东投入 − 分红</div><div class="why">所有者权益的变动 = 净利润 + 股东投入 − 分红</div></div></div>
+  </div>
+
+  <div class="split" style="margin-top:10px">
+    <div class="split-head"><span>代入奶茶店，按三类活动归位</span><span class="num">Δ现金 = 11</span></div>
+    <div class="grp">
+      <div class="grp-h"><span>经营活动</span><span class="num">+3</span></div>
+      <div class="grp-b num">净利润 4 + 折旧 1 − 应收增加 2 − 存货增加 1 + 应付增加 1</div>
+    </div>
+    <div class="grp">
+      <div class="grp-h"><span>投资活动</span><span class="num">−6</span></div>
+      <div class="grp-b num">买设备 −6 <span class="src">（设备净增 5 = 买入 6 − 折旧 1，折旧归经营）</span></div>
+    </div>
+    <div class="grp">
+      <div class="grp-h"><span>筹资活动</span><span class="num">+14</span></div>
+      <div class="grp-b num">借款增加 5 + 股东投入 10 − 分红 1</div>
+    </div>
+  </div>
+
+  <div class="k" style="margin:14px 0 6px">由此得到的符号规则</div>
+  <div class="rules">
+    <div class="rule minus"><div class="r1">非现金资产增加</div><div class="r2">现金 −</div><div class="r3">钱变成了应收、存货、设备</div></div>
+    <div class="rule plus"><div class="r1">负债、权益增加</div><div class="r2">现金 +</div><div class="r3">别人垫钱，或股东出钱</div></div>
+  </div>
+
+  <div class="card" style="margin-top:10px">
+    <p style="font-size:13.5px">资产负债表上<b>每一个科目的变动</b>，都会在现金流量表里找到归宿：要么在经营，要么在投资，要么在筹资。</p>
+  </div>
+
+  <div class="foot"><span>例：奶茶店第一年 · 单位：万元</span><span>为便于理解，省略其他综合收益等</span></div>
+</section>
+
+<!-- ======================= 4 ======================= -->
+<section class="poster" id="p4">
+  <div class="tag"><span>图解三表勾稽 · 间接法</span><span>4 / 6</span></div>
+  <h1>间接法四类调整，一张图看全</h1>
+  <p class="lede">净利润按“应收应付”算，经营现金流按“实收实付”算。两者的差距，只来自这<b>四个地方</b>。</p>
+
+  <div class="stack">
+    <div class="start-bar"><span>净利润</span><small>利润表最后一行，起点</small></div>
+
+    <div class="adj">
+      <div class="adj-h"><span class="n">1</span><span class="t">不花钱的费用</span><span class="act plus">加回</span></div>
+      <ul>
+        <li><span>资产减值准备、信用减值损失</span><span>加</span></li>
+        <li><span>固定资产折旧、使用权资产折旧</span><span>加</span></li>
+        <li><span>无形资产摊销、长期待摊费用摊销</span><span>加</span></li>
+      </ul>
+      <div class="why"><b>为什么：</b>利润里扣了，但这一年没有掏现金。</div>
+    </div>
+
+    <div class="adj">
+      <div class="adj-h"><span class="n">2</span><span class="t">不属于经营的损益</span><span class="act">剔除</span></div>
+      <ul>
+        <li><span>处置固定资产等长期资产的损失</span><span>收益则减</span></li>
+        <li><span>固定资产报废损失</span><span>收益则减</span></li>
+        <li><span>公允价值变动损失</span><span>收益则减</span></li>
+        <li><span>财务费用（借款利息等）</span><span>收益则减</span></li>
+        <li><span>投资损失</span><span>收益则减</span></li>
+      </ul>
+      <div class="why"><b>为什么：</b>这些钱的进出记在投资或筹资活动里，经营活动不能重复算。</div>
+    </div>
+
+    <div class="adj">
+      <div class="adj-h"><span class="n">3</span><span class="t">递延所得税</span><span class="act">调整</span></div>
+      <ul>
+        <li><span>递延所得税资产减少</span><span>增加则减</span></li>
+        <li><span>递延所得税负债增加</span><span>减少则减</span></li>
+      </ul>
+      <div class="why"><b>为什么：</b>所得税费用里有一部分是“账面税”，这一年并没有按这个数交。</div>
+    </div>
+
+    <div class="adj">
+      <div class="adj-h"><span class="n">4</span><span class="t">营运资本变动</span><span class="act">时间差</span></div>
+      <ul>
+        <li><span>存货的减少</span><span>增加则减</span></li>
+        <li><span>经营性应收项目的减少</span><span>增加则减</span></li>
+        <li><span>经营性应付项目的增加</span><span>减少则减</span></li>
+      </ul>
+      <div class="why"><b>为什么：</b>确认收入费用，和真正收钱付钱，不在同一时间。</div>
+    </div>
+
+    <div class="end-bar"><span>= 经营活动现金流量净额</span><small>对上现金流量表主表</small></div>
+
+    <div class="k" style="margin:6px 0 0">符号口诀</div>
+    <div class="rules">
+      <div class="rule plus"><div class="r1">费用、损失</div><div class="r2">加</div></div>
+      <div class="rule minus"><div class="r1">收益</div><div class="r2">减</div></div>
+      <div class="rule minus"><div class="r1">经营性资产增加</div><div class="r2">减</div></div>
+      <div class="rule plus"><div class="r1">经营性负债增加</div><div class="r2">加</div></div>
+    </div>
+  </div>
+
+  <div class="foot"><span>项目名称按年报“现金流量表补充资料”</span><span>“其他”项略</span></div>
+</section>
+
+<!-- ======================= 5 ======================= -->
+<section class="poster" id="p5">
+  <div class="tag"><span>图解三表勾稽 · 净利润到现金流的桥</span><span>5 / 6</span></div>
+  <h1>赚了 4 万，为什么只多了 3 万现金？</h1>
+  <p class="lede">从净利润出发，逐项加减，走到经营活动现金流。这座“桥”就是<b>间接法</b>。</p>
+
+  <div class="chart">
+    <div class="key"><span><i style="background:var(--is)"></i>净利润</span><span><i style="background:var(--plus)"></i>加</span><span><i style="background:var(--minus)"></i>减</span><span><i style="background:var(--cf)"></i>经营现金流</span></div>
+    <svg id="bridge-shop"></svg>
+  </div>
+
+  <div class="card gap-math" style="margin-top:10px">
+    <div class="k">差的 1 万去哪了</div>
+    <div class="row"><span>团购款没收回（应收占用）</span><span class="num">−2</span></div>
+    <div class="row"><span>原料还在店里（存货占用）</span><span class="num">−1</span></div>
+    <div class="row"><span>折旧不花钱（加回）</span><span class="num">+1</span></div>
+    <div class="row"><span>欠供应商没付（应付帮垫）</span><span class="num">+1</span></div>
+    <div class="row"><span>合计：现金比利润少</span><span class="num">−1</span></div>
+  </div>
+
+  <div class="card ratio" style="margin-top:10px">
+    <div class="big">0.75</div>
+    <p><b>净现比</b> = 经营现金流 3 ÷ 净利润 4。主要是团购款还没收回来，下个月到账后会好转。</p>
+  </div>
+
+  <div class="foot"><span>例：奶茶店第一年 · 单位：万元</span><span>不考虑税费和利息</span></div>
+</section>
+
+<!-- ======================= 6 ======================= -->
+<section class="poster" id="p6">
+  <div class="tag"><span>图解三表勾稽 · 完整版的桥</span><span>6 / 6</span></div>
+  <h1>一家公司的“利润到现金”之桥</h1>
+  <p class="lede">换成一家典型公司，按年报补充资料的口径，四类调整一个不少。</p>
+
+  <div class="chart">
+    <div class="key"><span><i style="background:var(--is)"></i>净利润</span><span><i style="background:var(--plus)"></i>加</span><span><i style="background:var(--minus)"></i>减</span><span><i style="background:var(--cf)"></i>经营现金流</span></div>
+    <svg id="bridge-full"></svg>
+  </div>
+
+  <div class="card reads" style="margin-top:10px">
+    <div class="k">怎么读这座桥</div>
+    <div><em>①</em><span>通常为正。折旧摊销大，说明是重资产行业；减值大，要看看是哪些资产出了问题。</span></div>
+    <div><em>②</em><span>把投资、筹资的损益挪走，有正有负，一般不大。</span></div>
+    <div><em>④</em><span><b>最值得盯。</b>这家公司的应收和存货吃掉了 740 的现金。如果年年如此，说明增长靠赊销和备货撑着。</span></div>
+  </div>
+
+  <div class="card ratio" style="margin-top:10px">
+    <div class="big">0.85</div>
+    <p><b>净现比</b> = 850 ÷ 1,000。长期低于 1，就要追问：利润为什么没有变成现金？</p>
+  </div>
+
+  <div class="foot"><span>示例数据，不对应任何真实公司 · 单位：万元</span><span></span></div>
+</section>
+
+<script>
+/* Horizontal waterfall drawn to one linear scale. */
+function waterfall(svg, rows, o) {
+  var NS = 'http://www.w3.org/2000/svg';
+  var W = 348, labelW = o.labelW, valW = 50;
+  var x0 = labelW + 8, x1 = W - valW - 6;
+  var sx = function (v) { return x0 + (v - o.min) / (o.max - o.min) * (x1 - x0); };
+  var css = getComputedStyle(document.documentElement);
+  var col = function (n) { return css.getPropertyValue(n).trim(); };
+  var fmt = function (v, signed) {
+    var s = Math.abs(v).toLocaleString('en-US');
+    return signed ? (v >= 0 ? '+' : '−') + s : s;
+  };
+  var parts = [], grid = [];
+  var y = 22, run = 0, prev = null;
+  function el(tag, attrs, text) {
+    var e = document.createElementNS(NS, tag);
+    for (var k in attrs) e.setAttribute(k, attrs[k]);
+    if (text != null) e.textContent = text;
+    return e;
+  }
+  // tick labels
+  o.ticks.forEach(function (t) {
+    parts.push(el('text', { x: sx(t), y: 12, 'font-size': 10.5, fill: col('--muted'), 'text-anchor': 'middle' }, fmt(t)));
+  });
+  rows.forEach(function (r) {
+    if (r.type === 'group') {
+      y += 6;
+      parts.push(el('line', { x1: 0, x2: W, y1: y, y2: y, stroke: col('--line'), 'stroke-width': 1 }));
+      parts.push(el('text', { x: 0, y: y + 17, 'font-size': 12, 'font-weight': 700, fill: col('--muted') }, r.label));
+      if (r.sub != null) parts.push(el('text', { x: W, y: y + 17, 'font-size': 12, 'font-weight': 700, fill: col('--muted'), 'text-anchor': 'end' }, '小计 ' + fmt(r.sub, true)));
+      y += 24;
+      return;
+    }
+    var h = r.note ? o.rowH + 14 : o.rowH;
+    var bh = 16, by = y + (o.rowH - bh) / 2 + 1;
+    var a, b, fill, bold = r.type === 'total';
+    if (r.type === 'total') { a = 0; b = r.value; run = r.value; fill = col(r.color); }
+    else { a = run; b = run + r.value; run = b; fill = r.value >= 0 ? col('--plus') : col('--minus'); }
+    var lo = Math.min(a, b), hi = Math.max(a, b);
+    if (prev) parts.push(el('line', { x1: sx(prev.v), x2: sx(prev.v), y1: prev.y, y2: by, stroke: col('--muted'), 'stroke-width': 1, 'stroke-dasharray': '2 2' }));
+    parts.push(el('rect', { x: sx(lo), y: by, width: Math.max(2, sx(hi) - sx(lo)), height: bh, rx: 2.5, fill: fill }));
+    parts.push(el('text', { x: 0, y: by + 12.5, 'font-size': 13, 'font-weight': bold ? 700 : 400, fill: col('--ink') }, r.label));
+    if (r.note) parts.push(el('text', { x: 0, y: by + 29, 'font-size': 11, fill: col('--muted') }, r.note));
+    parts.push(el('text', { x: W, y: by + 12.5, 'font-size': 13.5, 'font-weight': 700, fill: r.type === 'total' ? fill : col('--ink'), 'text-anchor': 'end' }, fmt(r.value, r.type !== 'total')));
+    prev = { v: run, y: by + bh };
+    y += h;
+  });
+  var bottom = y + 4;
+  o.ticks.forEach(function (t) {
+    grid.push(el('line', { x1: sx(t), x2: sx(t), y1: 18, y2: bottom, stroke: col('--line'), 'stroke-width': 1 }));
+  });
+  svg.setAttribute('viewBox', '0 0 ' + W + ' ' + (bottom + 2));
+  grid.concat(parts).forEach(function (p) { svg.appendChild(p); });
+}
+
+waterfall(document.getElementById('bridge-shop'), [
+  { type: 'total', label: '净利润', value: 4, color: '--is', note: '利润表最后一行' },
+  { type: 'delta', label: '加：折旧', value: 1, note: '记了费用，没掏钱' },
+  { type: 'delta', label: '减：应收账款增加', value: -2, note: '团购款还没收回' },
+  { type: 'delta', label: '减：存货增加', value: -1, note: '原料还在店里' },
+  { type: 'delta', label: '加：应付账款增加', value: 1, note: '欠供应商的还没付' },
+  { type: 'total', label: '经营活动现金流', value: 3, color: '--cf', note: '与现金流量表一致 ✓' }
+], { min: 0, max: 5, ticks: [0, 1, 2, 3, 4, 5], labelW: 124, rowH: 30 });
+
+waterfall(document.getElementById('bridge-full'), [
+  { type: 'total', label: '净利润', value: 1000, color: '--is' },
+  { type: 'group', label: '① 不花钱的费用 · 加回', sub: 430 },
+  { type: 'delta', label: '资产及信用减值损失', value: 80 },
+  { type: 'delta', label: '折旧与摊销', value: 350 },
+  { type: 'group', label: '② 不属于经营的损益 · 剔除', sub: -30 },
+  { type: 'delta', label: '处置资产收益', value: -60 },
+  { type: 'delta', label: '财务费用（利息）', value: 120 },
+  { type: 'delta', label: '投资收益', value: -90 },
+  { type: 'group', label: '③ 递延所得税', sub: -20 },
+  { type: 'delta', label: '递延所得税资产增加', value: -20 },
+  { type: 'group', label: '④ 营运资本变动', sub: -530 },
+  { type: 'delta', label: '存货增加', value: -260 },
+  { type: 'delta', label: '经营性应收增加', value: -480 },
+  { type: 'delta', label: '经营性应付增加', value: 210 },
+  { type: 'group', label: '' },
+  { type: 'total', label: '经营活动现金流', value: 850, color: '--cf' }
+], { min: 0, max: 1600, ticks: [0, 400, 800, 1200, 1600], labelW: 128, rowH: 28 });
+</script>
+</body>
+</html>
