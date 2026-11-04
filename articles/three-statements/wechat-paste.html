@@ -1,0 +1,219 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>三表联动 · 公众号粘贴版</title>
+<!--
+  公众号粘贴版：只有正文，全部是内联样式，没有脚本。
+  用法：用电脑浏览器打开本文件 → Ctrl+A 全选 → Ctrl+C 复制 → 到公众号后台正文区粘贴。
+  图片不会随文字过去：每张图的位置有“在这里插入图片”提示框，插入对应图片后删掉提示框。
+  本文件由 index.html 的“复制正文”逻辑生成，正文改动后请重新生成。
+-->
+</head>
+<body style="margin:0;background:#FFFFFF;">
+<div style="max-width:600px;margin:0 auto;padding:24px 16px;">
+<section style="color:rgb(51, 60, 72);font-size:16px;font-weight:normal;font-style:normal;line-height:29.6px;letter-spacing:0.5px;text-align:start">
+      <p style="text-align:justify;margin-top:0px;margin-right:0px;margin-bottom:16px;margin-left:0px">第一次翻财报，很多人会被三张表绕晕：资产负债表、利润表、现金流量表，每张都密密麻麻。</p>
+      <p style="text-align:justify;margin-top:0px;margin-right:0px;margin-bottom:16px;margin-left:0px">其实这三张表讲的是<strong style="color:rgb(31, 42, 55);font-weight:bold">同一盘生意</strong>，只是角度不同。表与表之间的数字环环相扣，会计上把这种关系叫作<strong style="color:rgb(31, 42, 55);font-weight:bold">“勾稽关系”</strong>。</p>
+      <p style="text-align:justify;margin-top:0px;margin-right:0px;margin-bottom:16px;margin-left:0px">今天用一家奶茶店一年的账，把三张表串起来讲。看完这篇，你也能自己动手核对一份财报。</p>
+
+      <h2 style="color:rgb(31, 42, 55);font-size:19px;font-weight:bold;line-height:28.5px;margin-top:40px;margin-right:0px;margin-bottom:16px;margin-left:0px;padding-bottom:8px;border-bottom:1px solid rgb(221, 227, 234)"><strong style="font-weight:bold;color:rgb(31, 42, 55)">一、三张表，各管什么？</strong></h2>
+      <p style="text-align:justify;margin-top:0px;margin-right:0px;margin-bottom:16px;margin-left:0px">先用一句话认识它们。</p>
+
+      <section style="margin-top:0px;margin-right:0px;margin-bottom:12px;margin-left:0px;padding-top:14px;padding-right:16px;padding-bottom:14px;padding-left:16px;border-top:1px solid rgb(45, 91, 154);border-right:1px solid rgb(45, 91, 154);border-bottom:1px solid rgb(45, 91, 154);border-left:1px solid rgb(45, 91, 154);background-color:rgb(234, 240, 248);border-radius:8px">
+        <p style="color:rgb(45, 91, 154);font-size:17px;font-weight:bold;line-height:31.45px;text-align:justify;margin-top:0px;margin-right:0px;margin-bottom:0px;margin-left:0px">资产负债表</p>
+        <p style="color:rgb(31, 42, 55);font-weight:bold;text-align:justify;margin-top:0px;margin-right:0px;margin-bottom:0px;margin-left:0px">某一天，公司有多少家底？</p>
+        <p style="text-align:justify;margin-top:0px;margin-right:0px;margin-bottom:0px;margin-left:0px">它像一张<strong style="color:rgb(31, 42, 55);font-weight:bold">照片</strong>，拍下的是某个时点（比如 12 月 31 日）的状况。</p>
+        <p style="color:rgb(102, 112, 128);font-size:15px;line-height:27.75px;text-align:justify;margin-top:6px;margin-right:0px;margin-bottom:0px;margin-left:0px">核心公式：资产 = 负债 + 所有者权益</p>
+      </section>
+      <section style="margin-top:0px;margin-right:0px;margin-bottom:12px;margin-left:0px;padding-top:14px;padding-right:16px;padding-bottom:14px;padding-left:16px;border-top:1px solid rgb(184, 106, 18);border-right:1px solid rgb(184, 106, 18);border-bottom:1px solid rgb(184, 106, 18);border-left:1px solid rgb(184, 106, 18);background-color:rgb(251, 241, 228);border-radius:8px">
+        <p style="color:rgb(184, 106, 18);font-size:17px;font-weight:bold;line-height:31.45px;text-align:justify;margin-top:0px;margin-right:0px;margin-bottom:0px;margin-left:0px">利润表</p>
+        <p style="color:rgb(31, 42, 55);font-weight:bold;text-align:justify;margin-top:0px;margin-right:0px;margin-bottom:0px;margin-left:0px">一段时间里，公司赚没赚钱？</p>
+        <p style="text-align:justify;margin-top:0px;margin-right:0px;margin-bottom:0px;margin-left:0px">它像一张<strong style="color:rgb(31, 42, 55);font-weight:bold">成绩单</strong>，记录一段时间（比如一整年）的经营成果。</p>
+        <p style="color:rgb(102, 112, 128);font-size:15px;line-height:27.75px;text-align:justify;margin-top:6px;margin-right:0px;margin-bottom:0px;margin-left:0px">核心公式：收入 − 成本费用 = 利润</p>
+      </section>
+      <section style="margin-top:0px;margin-right:0px;margin-bottom:12px;margin-left:0px;padding-top:14px;padding-right:16px;padding-bottom:14px;padding-left:16px;border-top:1px solid rgb(35, 128, 106);border-right:1px solid rgb(35, 128, 106);border-bottom:1px solid rgb(35, 128, 106);border-left:1px solid rgb(35, 128, 106);background-color:rgb(230, 243, 239);border-radius:8px">
+        <p style="color:rgb(35, 128, 106);font-size:17px;font-weight:bold;line-height:31.45px;text-align:justify;margin-top:0px;margin-right:0px;margin-bottom:0px;margin-left:0px">现金流量表</p>
+        <p style="color:rgb(31, 42, 55);font-weight:bold;text-align:justify;margin-top:0px;margin-right:0px;margin-bottom:0px;margin-left:0px">一段时间里，真金白银进出了多少？</p>
+        <p style="text-align:justify;margin-top:0px;margin-right:0px;margin-bottom:0px;margin-left:0px">它像一本<strong style="color:rgb(31, 42, 55);font-weight:bold">银行流水</strong>，只认实际收到、付出的钱。</p>
+        <p style="color:rgb(102, 112, 128);font-size:15px;line-height:27.75px;text-align:justify;margin-top:6px;margin-right:0px;margin-bottom:0px;margin-left:0px">核心公式：期初现金 + 本期净流入 = 期末现金</p>
+      </section>
+
+      <p style="text-align:justify;margin-top:0px;margin-right:0px;margin-bottom:16px;margin-left:0px">这里有两个区别，是理解三表联动的钥匙：</p>
+      <ol style="margin-top:0px;margin-right:0px;margin-bottom:16px;margin-left:0px;padding-left:22px">
+        <li style="margin-top:0px;margin-right:0px;margin-bottom:6px;margin-left:0px"><strong style="color:rgb(31, 42, 55);font-weight:bold">时点和时期</strong>：资产负债表看“某一天”，另外两张表看“一段时间”。</li>
+        <li style="margin-top:0px;margin-right:0px;margin-bottom:6px;margin-left:0px"><strong style="color:rgb(31, 42, 55);font-weight:bold">应收和实收</strong>：利润表里，货卖出去就记收入，钱没到账也算；现金流量表里，钱真正到手才算。</li>
+      </ol>
+      <p style="text-align:justify;margin-top:0px;margin-right:0px;margin-bottom:16px;margin-left:0px">所以，<strong style="color:rgb(31, 42, 55);font-weight:bold">利润不等于现金</strong>。记住这一点，后面就好懂了。</p>
+
+      <h2 style="color:rgb(31, 42, 55);font-size:19px;font-weight:bold;line-height:28.5px;margin-top:40px;margin-right:0px;margin-bottom:16px;margin-left:0px;padding-bottom:8px;border-bottom:1px solid rgb(221, 227, 234)"><strong style="font-weight:bold;color:rgb(31, 42, 55)">二、看一家奶茶店的一年</strong></h2>
+      <p style="text-align:justify;margin-top:0px;margin-right:0px;margin-bottom:16px;margin-left:0px">小林开了一家奶茶店。为了好算，我们<strong style="color:rgb(31, 42, 55);font-weight:bold">不考虑税费和利息</strong>。第一年发生了 8 件事：</p>
+      <ol style="margin-top:0px;margin-right:0px;margin-bottom:16px;margin-left:0px;padding-left:22px">
+        <li style="margin-top:0px;margin-right:0px;margin-bottom:6px;margin-left:0px">自己拿出 <strong style="color:rgb(31, 42, 55);font-weight:bold">10 万元</strong>开店（股东投入）</li>
+        <li style="margin-top:0px;margin-right:0px;margin-bottom:6px;margin-left:0px">向银行借款 <strong style="color:rgb(31, 42, 55);font-weight:bold">5 万元</strong></li>
+        <li style="margin-top:0px;margin-right:0px;margin-bottom:6px;margin-left:0px">花 <strong style="color:rgb(31, 42, 55);font-weight:bold">6 万元</strong>买制冰机、封口机等设备</li>
+        <li style="margin-top:0px;margin-right:0px;margin-bottom:6px;margin-left:0px">进了 <strong style="color:rgb(31, 42, 55);font-weight:bold">4 万元</strong>原料：现付 3 万，另外 1 万先欠着供应商</li>
+        <li style="margin-top:0px;margin-right:0px;margin-bottom:6px;margin-left:0px">全年卖奶茶 <strong style="color:rgb(31, 42, 55);font-weight:bold">12 万元</strong>：收到现金 10 万；另有 2 万是附近公司的团购，约定下个月结账。这些奶茶用掉了 3 万元原料</li>
+        <li style="margin-top:0px;margin-right:0px;margin-bottom:6px;margin-left:0px">付房租、工资等 <strong style="color:rgb(31, 42, 55);font-weight:bold">4 万元</strong></li>
+        <li style="margin-top:0px;margin-right:0px;margin-bottom:6px;margin-left:0px">设备折旧 <strong style="color:rgb(31, 42, 55);font-weight:bold">1 万元</strong>（设备用了一年，价值“用旧”了 1 万，但不用掏钱）</li>
+        <li style="margin-top:0px;margin-right:0px;margin-bottom:6px;margin-left:0px">年底给自己分红 <strong style="color:rgb(31, 42, 55);font-weight:bold">1 万元</strong></li>
+      </ol>
+      <p style="text-align:justify;margin-top:0px;margin-right:0px;margin-bottom:16px;margin-left:0px">下面，三张表依次登场（单位：万元）。</p>
+
+      <h3 style="color:rgb(184, 106, 18);font-size:17px;font-weight:bold;line-height:25.5px;margin-top:28px;margin-right:0px;margin-bottom:12px;margin-left:0px"><strong style="font-weight:bold;color:rgb(184, 106, 18)">利润表：一年赚了多少？</strong></h3>
+      <div style="margin-top:0px;margin-right:0px;margin-bottom:20px;margin-left:0px">
+        <table style="font-size:15px;line-height:24px;letter-spacing:normal;margin-top:0px;margin-right:0px;margin-bottom:0px;margin-left:0px;width:100%;border-collapse:collapse">
+          <thead style=""><tr style=""><th style="color:rgb(255, 255, 255);font-weight:bold;text-align:left;padding-top:8px;padding-right:10px;padding-bottom:8px;padding-left:10px;background-color:rgb(184, 106, 18);vertical-align:middle">项目</th><th style="color:rgb(255, 255, 255);font-weight:bold;text-align:right;padding-top:8px;padding-right:10px;padding-bottom:8px;padding-left:10px;background-color:rgb(184, 106, 18);white-space:nowrap;vertical-align:middle">金额</th></tr></thead>
+          <tbody style="">
+            <tr style=""><td style="padding-top:7px;padding-right:10px;padding-bottom:7px;padding-left:10px;border-bottom:1px solid rgb(221, 227, 234);vertical-align:top">营业收入</td><td style="text-align:right;padding-top:7px;padding-right:10px;padding-bottom:7px;padding-left:10px;border-bottom:1px solid rgb(221, 227, 234);white-space:nowrap;vertical-align:top">12</td></tr>
+            <tr style=""><td style="padding-top:7px;padding-right:10px;padding-bottom:7px;padding-left:10px;border-bottom:1px solid rgb(221, 227, 234);vertical-align:top">减：营业成本（用掉的原料）</td><td style="text-align:right;padding-top:7px;padding-right:10px;padding-bottom:7px;padding-left:10px;border-bottom:1px solid rgb(221, 227, 234);white-space:nowrap;vertical-align:top">3</td></tr>
+            <tr style=""><td style="padding-top:7px;padding-right:10px;padding-bottom:7px;padding-left:10px;border-bottom:1px solid rgb(221, 227, 234);vertical-align:top">减：房租、工资</td><td style="text-align:right;padding-top:7px;padding-right:10px;padding-bottom:7px;padding-left:10px;border-bottom:1px solid rgb(221, 227, 234);white-space:nowrap;vertical-align:top">4</td></tr>
+            <tr style=""><td style="padding-top:7px;padding-right:10px;padding-bottom:7px;padding-left:10px;border-bottom:1px solid rgb(221, 227, 234);vertical-align:top">减：折旧</td><td style="text-align:right;padding-top:7px;padding-right:10px;padding-bottom:7px;padding-left:10px;border-bottom:1px solid rgb(221, 227, 234);white-space:nowrap;vertical-align:top">1</td></tr>
+            <tr style=""><td style="color:rgb(31, 42, 55);font-weight:bold;padding-top:7px;padding-right:10px;padding-bottom:7px;padding-left:10px;border-top:2px solid rgb(31, 42, 55);border-bottom:2px solid rgb(31, 42, 55);vertical-align:top">净利润</td><td style="color:rgb(31, 42, 55);font-weight:bold;text-align:right;padding-top:7px;padding-right:10px;padding-bottom:7px;padding-left:10px;border-top:2px solid rgb(31, 42, 55);border-bottom:2px solid rgb(31, 42, 55);white-space:nowrap;vertical-align:top">4</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3 style="color:rgb(35, 128, 106);font-size:17px;font-weight:bold;line-height:25.5px;margin-top:28px;margin-right:0px;margin-bottom:12px;margin-left:0px"><strong style="font-weight:bold;color:rgb(35, 128, 106)">现金流量表：钱袋子怎么变？</strong></h3>
+      <p style="text-align:justify;margin-top:0px;margin-right:0px;margin-bottom:16px;margin-left:0px">现金流量表把现金进出分成三类：日常经营、买卖长期资产（投资）、找钱和还钱（筹资）。</p>
+      <div style="margin-top:0px;margin-right:0px;margin-bottom:20px;margin-left:0px">
+        <table style="font-size:15px;line-height:24px;letter-spacing:normal;margin-top:0px;margin-right:0px;margin-bottom:0px;margin-left:0px;width:100%;border-collapse:collapse">
+          <thead style=""><tr style=""><th style="color:rgb(255, 255, 255);font-weight:bold;text-align:left;padding-top:8px;padding-right:10px;padding-bottom:8px;padding-left:10px;background-color:rgb(35, 128, 106);vertical-align:middle">项目</th><th style="color:rgb(255, 255, 255);font-weight:bold;text-align:right;padding-top:8px;padding-right:10px;padding-bottom:8px;padding-left:10px;background-color:rgb(35, 128, 106);white-space:nowrap;vertical-align:middle">金额</th></tr></thead>
+          <tbody style="">
+            <tr style=""><td style="padding-top:7px;padding-right:10px;padding-bottom:7px;padding-left:10px;border-bottom:1px solid rgb(221, 227, 234);vertical-align:top">卖奶茶收到现金</td><td style="text-align:right;padding-top:7px;padding-right:10px;padding-bottom:7px;padding-left:10px;border-bottom:1px solid rgb(221, 227, 234);white-space:nowrap;vertical-align:top">+10</td></tr>
+            <tr style=""><td style="padding-top:7px;padding-right:10px;padding-bottom:7px;padding-left:10px;border-bottom:1px solid rgb(221, 227, 234);vertical-align:top">买原料付出现金</td><td style="text-align:right;padding-top:7px;padding-right:10px;padding-bottom:7px;padding-left:10px;border-bottom:1px solid rgb(221, 227, 234);white-space:nowrap;vertical-align:top">−3</td></tr>
+            <tr style=""><td style="padding-top:7px;padding-right:10px;padding-bottom:7px;padding-left:10px;border-bottom:1px solid rgb(221, 227, 234);vertical-align:top">付房租、工资</td><td style="text-align:right;padding-top:7px;padding-right:10px;padding-bottom:7px;padding-left:10px;border-bottom:1px solid rgb(221, 227, 234);white-space:nowrap;vertical-align:top">−4</td></tr>
+            <tr style=""><td style="color:rgb(31, 42, 55);font-weight:bold;padding-top:7px;padding-right:10px;padding-bottom:7px;padding-left:10px;border-bottom:1px solid rgb(221, 227, 234);background-color:rgb(243, 245, 248);vertical-align:top">经营活动现金流</td><td style="color:rgb(31, 42, 55);font-weight:bold;text-align:right;padding-top:7px;padding-right:10px;padding-bottom:7px;padding-left:10px;border-bottom:1px solid rgb(221, 227, 234);background-color:rgb(243, 245, 248);white-space:nowrap;vertical-align:top">+3</td></tr>
+            <tr style=""><td style="padding-top:7px;padding-right:10px;padding-bottom:7px;padding-left:10px;border-bottom:1px solid rgb(221, 227, 234);vertical-align:top">买设备</td><td style="text-align:right;padding-top:7px;padding-right:10px;padding-bottom:7px;padding-left:10px;border-bottom:1px solid rgb(221, 227, 234);white-space:nowrap;vertical-align:top">−6</td></tr>
+            <tr style=""><td style="color:rgb(31, 42, 55);font-weight:bold;padding-top:7px;padding-right:10px;padding-bottom:7px;padding-left:10px;border-bottom:1px solid rgb(221, 227, 234);background-color:rgb(243, 245, 248);vertical-align:top">投资活动现金流</td><td style="color:rgb(31, 42, 55);font-weight:bold;text-align:right;padding-top:7px;padding-right:10px;padding-bottom:7px;padding-left:10px;border-bottom:1px solid rgb(221, 227, 234);background-color:rgb(243, 245, 248);white-space:nowrap;vertical-align:top">−6</td></tr>
+            <tr style=""><td style="padding-top:7px;padding-right:10px;padding-bottom:7px;padding-left:10px;border-bottom:1px solid rgb(221, 227, 234);vertical-align:top">股东投入</td><td style="text-align:right;padding-top:7px;padding-right:10px;padding-bottom:7px;padding-left:10px;border-bottom:1px solid rgb(221, 227, 234);white-space:nowrap;vertical-align:top">+10</td></tr>
+            <tr style=""><td style="padding-top:7px;padding-right:10px;padding-bottom:7px;padding-left:10px;border-bottom:1px solid rgb(221, 227, 234);vertical-align:top">银行借款</td><td style="text-align:right;padding-top:7px;padding-right:10px;padding-bottom:7px;padding-left:10px;border-bottom:1px solid rgb(221, 227, 234);white-space:nowrap;vertical-align:top">+5</td></tr>
+            <tr style=""><td style="padding-top:7px;padding-right:10px;padding-bottom:7px;padding-left:10px;border-bottom:1px solid rgb(221, 227, 234);vertical-align:top">分红</td><td style="text-align:right;padding-top:7px;padding-right:10px;padding-bottom:7px;padding-left:10px;border-bottom:1px solid rgb(221, 227, 234);white-space:nowrap;vertical-align:top">−1</td></tr>
+            <tr style=""><td style="color:rgb(31, 42, 55);font-weight:bold;padding-top:7px;padding-right:10px;padding-bottom:7px;padding-left:10px;border-bottom:1px solid rgb(221, 227, 234);background-color:rgb(243, 245, 248);vertical-align:top">筹资活动现金流</td><td style="color:rgb(31, 42, 55);font-weight:bold;text-align:right;padding-top:7px;padding-right:10px;padding-bottom:7px;padding-left:10px;border-bottom:1px solid rgb(221, 227, 234);background-color:rgb(243, 245, 248);white-space:nowrap;vertical-align:top">+14</td></tr>
+            <tr style=""><td style="padding-top:7px;padding-right:10px;padding-bottom:7px;padding-left:10px;border-bottom:1px solid rgb(221, 227, 234);vertical-align:top">现金净增加（3 − 6 + 14）</td><td style="text-align:right;padding-top:7px;padding-right:10px;padding-bottom:7px;padding-left:10px;border-bottom:1px solid rgb(221, 227, 234);white-space:nowrap;vertical-align:top">+11</td></tr>
+            <tr style=""><td style="padding-top:7px;padding-right:10px;padding-bottom:7px;padding-left:10px;border-bottom:1px solid rgb(221, 227, 234);vertical-align:top">期初现金</td><td style="text-align:right;padding-top:7px;padding-right:10px;padding-bottom:7px;padding-left:10px;border-bottom:1px solid rgb(221, 227, 234);white-space:nowrap;vertical-align:top">0</td></tr>
+            <tr style=""><td style="color:rgb(31, 42, 55);font-weight:bold;padding-top:7px;padding-right:10px;padding-bottom:7px;padding-left:10px;border-top:2px solid rgb(31, 42, 55);border-bottom:2px solid rgb(31, 42, 55);vertical-align:top">期末现金</td><td style="color:rgb(31, 42, 55);font-weight:bold;text-align:right;padding-top:7px;padding-right:10px;padding-bottom:7px;padding-left:10px;border-top:2px solid rgb(31, 42, 55);border-bottom:2px solid rgb(31, 42, 55);white-space:nowrap;vertical-align:top">11</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3 style="color:rgb(45, 91, 154);font-size:17px;font-weight:bold;line-height:25.5px;margin-top:28px;margin-right:0px;margin-bottom:12px;margin-left:0px"><strong style="font-weight:bold;color:rgb(45, 91, 154)">资产负债表：年底的家底</strong></h3>
+      <div style="margin-top:0px;margin-right:0px;margin-bottom:20px;margin-left:0px">
+        <table style="font-size:15px;line-height:24px;letter-spacing:normal;margin-top:0px;margin-right:0px;margin-bottom:0px;margin-left:0px;width:100%;border-collapse:collapse">
+          <thead style=""><tr style=""><th style="color:rgb(255, 255, 255);font-weight:bold;text-align:left;padding-top:8px;padding-right:10px;padding-bottom:8px;padding-left:10px;background-color:rgb(45, 91, 154);vertical-align:middle">项目</th><th style="color:rgb(255, 255, 255);font-weight:bold;text-align:right;padding-top:8px;padding-right:10px;padding-bottom:8px;padding-left:10px;background-color:rgb(45, 91, 154);white-space:nowrap;vertical-align:middle">金额</th></tr></thead>
+          <tbody style="">
+            <tr style=""><td style="padding-top:7px;padding-right:10px;padding-bottom:7px;padding-left:10px;border-bottom:1px solid rgb(221, 227, 234);vertical-align:top">货币资金</td><td style="text-align:right;padding-top:7px;padding-right:10px;padding-bottom:7px;padding-left:10px;border-bottom:1px solid rgb(221, 227, 234);white-space:nowrap;vertical-align:top">11</td></tr>
+            <tr style=""><td style="padding-top:7px;padding-right:10px;padding-bottom:7px;padding-left:10px;border-bottom:1px solid rgb(221, 227, 234);vertical-align:top">应收账款（团购款还没收）</td><td style="text-align:right;padding-top:7px;padding-right:10px;padding-bottom:7px;padding-left:10px;border-bottom:1px solid rgb(221, 227, 234);white-space:nowrap;vertical-align:top">2</td></tr>
+            <tr style=""><td style="padding-top:7px;padding-right:10px;padding-bottom:7px;padding-left:10px;border-bottom:1px solid rgb(221, 227, 234);vertical-align:top">存货（4 万原料用掉 3 万）</td><td style="text-align:right;padding-top:7px;padding-right:10px;padding-bottom:7px;padding-left:10px;border-bottom:1px solid rgb(221, 227, 234);white-space:nowrap;vertical-align:top">1</td></tr>
+            <tr style=""><td style="padding-top:7px;padding-right:10px;padding-bottom:7px;padding-left:10px;border-bottom:1px solid rgb(221, 227, 234);vertical-align:top">固定资产（6 万设备减去折旧 1 万）</td><td style="text-align:right;padding-top:7px;padding-right:10px;padding-bottom:7px;padding-left:10px;border-bottom:1px solid rgb(221, 227, 234);white-space:nowrap;vertical-align:top">5</td></tr>
+            <tr style=""><td style="color:rgb(31, 42, 55);font-weight:bold;padding-top:7px;padding-right:10px;padding-bottom:7px;padding-left:10px;border-bottom:1px solid rgb(221, 227, 234);background-color:rgb(243, 245, 248);vertical-align:top">资产合计</td><td style="color:rgb(31, 42, 55);font-weight:bold;text-align:right;padding-top:7px;padding-right:10px;padding-bottom:7px;padding-left:10px;border-bottom:1px solid rgb(221, 227, 234);background-color:rgb(243, 245, 248);white-space:nowrap;vertical-align:top">19</td></tr>
+            <tr style=""><td style="padding-top:7px;padding-right:10px;padding-bottom:7px;padding-left:10px;border-bottom:1px solid rgb(221, 227, 234);vertical-align:top">短期借款</td><td style="text-align:right;padding-top:7px;padding-right:10px;padding-bottom:7px;padding-left:10px;border-bottom:1px solid rgb(221, 227, 234);white-space:nowrap;vertical-align:top">5</td></tr>
+            <tr style=""><td style="padding-top:7px;padding-right:10px;padding-bottom:7px;padding-left:10px;border-bottom:1px solid rgb(221, 227, 234);vertical-align:top">应付账款（欠供应商的）</td><td style="text-align:right;padding-top:7px;padding-right:10px;padding-bottom:7px;padding-left:10px;border-bottom:1px solid rgb(221, 227, 234);white-space:nowrap;vertical-align:top">1</td></tr>
+            <tr style=""><td style="color:rgb(31, 42, 55);font-weight:bold;padding-top:7px;padding-right:10px;padding-bottom:7px;padding-left:10px;border-bottom:1px solid rgb(221, 227, 234);background-color:rgb(243, 245, 248);vertical-align:top">负债合计</td><td style="color:rgb(31, 42, 55);font-weight:bold;text-align:right;padding-top:7px;padding-right:10px;padding-bottom:7px;padding-left:10px;border-bottom:1px solid rgb(221, 227, 234);background-color:rgb(243, 245, 248);white-space:nowrap;vertical-align:top">6</td></tr>
+            <tr style=""><td style="padding-top:7px;padding-right:10px;padding-bottom:7px;padding-left:10px;border-bottom:1px solid rgb(221, 227, 234);vertical-align:top">实收资本</td><td style="text-align:right;padding-top:7px;padding-right:10px;padding-bottom:7px;padding-left:10px;border-bottom:1px solid rgb(221, 227, 234);white-space:nowrap;vertical-align:top">10</td></tr>
+            <tr style=""><td style="padding-top:7px;padding-right:10px;padding-bottom:7px;padding-left:10px;border-bottom:1px solid rgb(221, 227, 234);vertical-align:top">未分配利润</td><td style="text-align:right;padding-top:7px;padding-right:10px;padding-bottom:7px;padding-left:10px;border-bottom:1px solid rgb(221, 227, 234);white-space:nowrap;vertical-align:top">3</td></tr>
+            <tr style=""><td style="color:rgb(31, 42, 55);font-weight:bold;padding-top:7px;padding-right:10px;padding-bottom:7px;padding-left:10px;border-bottom:1px solid rgb(221, 227, 234);background-color:rgb(243, 245, 248);vertical-align:top">所有者权益合计</td><td style="color:rgb(31, 42, 55);font-weight:bold;text-align:right;padding-top:7px;padding-right:10px;padding-bottom:7px;padding-left:10px;border-bottom:1px solid rgb(221, 227, 234);background-color:rgb(243, 245, 248);white-space:nowrap;vertical-align:top">13</td></tr>
+            <tr style=""><td style="color:rgb(31, 42, 55);font-weight:bold;padding-top:7px;padding-right:10px;padding-bottom:7px;padding-left:10px;border-top:2px solid rgb(31, 42, 55);border-bottom:2px solid rgb(31, 42, 55);vertical-align:top">负债和所有者权益合计</td><td style="color:rgb(31, 42, 55);font-weight:bold;text-align:right;padding-top:7px;padding-right:10px;padding-bottom:7px;padding-left:10px;border-top:2px solid rgb(31, 42, 55);border-bottom:2px solid rgb(31, 42, 55);white-space:nowrap;vertical-align:top">19</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p style="text-align:justify;margin-top:0px;margin-right:0px;margin-bottom:16px;margin-left:0px">资产 19 = 负债 6 + 所有者权益 13，账平了 <span style="color:rgb(35, 128, 106);font-weight:bold">✓</span></p>
+
+      <h2 style="color:rgb(31, 42, 55);font-size:19px;font-weight:bold;line-height:28.5px;margin-top:40px;margin-right:0px;margin-bottom:16px;margin-left:0px;padding-bottom:8px;border-bottom:1px solid rgb(221, 227, 234)"><strong style="font-weight:bold;color:rgb(31, 42, 55)">三、三条勾稽线，把三张表串起来</strong></h2>
+
+      <h3 style="color:rgb(31, 42, 55);font-size:17px;font-weight:bold;line-height:25.5px;margin-top:28px;margin-right:0px;margin-bottom:12px;margin-left:0px"><strong style="font-weight:bold;color:rgb(31, 42, 55)">第 ① 条：利润表 → 资产负债表</strong><span style="color:rgb(102, 112, 128);font-size:15px;font-weight:normal;line-height:22.5px;display:block">净利润流进了“未分配利润”</span></h3>
+      <p style="text-align:justify;margin-top:0px;margin-right:0px;margin-bottom:16px;margin-left:0px">公司赚的钱最终归股东，所以净利润会进入资产负债表的所有者权益。</p>
+      <p style="color:rgb(31, 42, 55);font-weight:bold;text-align:center;margin-top:0px;margin-right:0px;margin-bottom:16px;margin-left:0px;padding-top:12px;padding-right:16px;padding-bottom:12px;padding-left:16px;background-color:rgb(243, 245, 248);border-radius:8px">期末未分配利润 = 期初未分配利润 + 本期净利润 − 分红</p>
+      <p style="text-align:justify;margin-top:0px;margin-right:0px;margin-bottom:16px;margin-left:0px">奶茶店：0 + 4 − 1 = <strong style="color:rgb(31, 42, 55);font-weight:bold">3 万</strong>，和资产负债表上的 3 万对上了 <span style="color:rgb(35, 128, 106);font-weight:bold">✓</span></p>
+      <p style="color:rgb(102, 112, 128);font-size:15px;line-height:26.25px;text-align:justify;margin-top:0px;margin-right:0px;margin-bottom:16px;margin-left:0px;padding-top:12px;padding-right:16px;padding-bottom:12px;padding-left:16px;background-color:rgb(243, 245, 248);border-radius:8px">实际财报里还要减去“提取盈余公积”，原理一样：利润先进来，再按规定分出去一部分。</p>
+
+      <h3 style="color:rgb(31, 42, 55);font-size:17px;font-weight:bold;line-height:25.5px;margin-top:28px;margin-right:0px;margin-bottom:12px;margin-left:0px"><strong style="font-weight:bold;color:rgb(31, 42, 55)">第 ② 条：现金流量表 → 资产负债表</strong><span style="color:rgb(102, 112, 128);font-size:15px;font-weight:normal;line-height:22.5px;display:block">期末现金对上“货币资金”</span></h3>
+      <p style="text-align:justify;margin-top:0px;margin-right:0px;margin-bottom:16px;margin-left:0px">现金流量表最后一行“期末现金及现金等价物余额”，应该和资产负债表的“货币资金”对得上。</p>
+      <p style="text-align:justify;margin-top:0px;margin-right:0px;margin-bottom:16px;margin-left:0px">奶茶店：现金流量表期末现金 11 万 = 资产负债表货币资金 <strong style="color:rgb(31, 42, 55);font-weight:bold">11 万</strong> <span style="color:rgb(35, 128, 106);font-weight:bold">✓</span></p>
+      <p style="color:rgb(102, 112, 128);font-size:15px;line-height:26.25px;text-align:justify;margin-top:0px;margin-right:0px;margin-bottom:16px;margin-left:0px;padding-top:12px;padding-right:16px;padding-bottom:12px;padding-left:16px;background-color:rgb(243, 245, 248);border-radius:8px"><strong style="color:rgb(51, 60, 72);font-weight:bold">小提醒：</strong>上市公司的这两个数常常不完全相等。差额一般是<strong style="color:rgb(51, 60, 72);font-weight:bold">受限资金</strong>，比如银行承兑汇票保证金、被冻结的存款。它们算在货币资金里，但不能随便动用，所以不算“现金及现金等价物”。差额的原因可以在财报附注里找到；如果差额很大又说不清，就要多留个心眼。</p>
+
+      <h3 style="color:rgb(31, 42, 55);font-size:17px;font-weight:bold;line-height:25.5px;margin-top:28px;margin-right:0px;margin-bottom:12px;margin-left:0px"><strong style="font-weight:bold;color:rgb(31, 42, 55)">第 ③ 条：利润表 → 现金流量表</strong><span style="color:rgb(102, 112, 128);font-size:15px;font-weight:normal;line-height:22.5px;display:block">从净利润，推出经营现金流</span></h3>
+      <p style="text-align:justify;margin-top:0px;margin-right:0px;margin-bottom:16px;margin-left:0px">奶茶店赚了 4 万利润，经营活动却只流入 3 万现金。少的 1 万去哪了？答案藏在资产负债表的变动里：</p>
+      <p style="color:rgb(31, 42, 55);font-weight:bold;text-align:center;margin-top:0px;margin-right:0px;margin-bottom:16px;margin-left:0px;padding-top:12px;padding-right:16px;padding-bottom:12px;padding-left:16px;background-color:rgb(243, 245, 248);border-radius:8px">净利润 4 + 折旧 1 − 应收增加 2 − 存货增加 1 + 应付增加 1 = 3</p>
+      <p style="text-align:justify;margin-top:0px;margin-right:0px;margin-bottom:16px;margin-left:0px">结果和现金流量表算出的经营现金流一样 <span style="color:rgb(35, 128, 106);font-weight:bold">✓</span> 这种从净利润倒推经营现金流的方法叫<strong style="color:rgb(31, 42, 55);font-weight:bold">“间接法”</strong>，第五节会用图把它一步步拆开。</p>
+
+      <h2 style="color:rgb(31, 42, 55);font-size:19px;font-weight:bold;line-height:28.5px;margin-top:40px;margin-right:0px;margin-bottom:16px;margin-left:0px;padding-bottom:8px;border-bottom:1px solid rgb(221, 227, 234)"><strong style="font-weight:bold;color:rgb(31, 42, 55)">四、底层逻辑：三张表为什么一定对得上？</strong></h2>
+      <p style="text-align:justify;margin-top:0px;margin-right:0px;margin-bottom:16px;margin-left:0px">前面讲了三条线“是什么”。很多人卡在“为什么”：凭什么三张不同的表，数字就一定对得上？</p>
+      <p style="text-align:justify;margin-top:0px;margin-right:0px;margin-bottom:16px;margin-left:0px">答案藏在资产负债表本身。</p>
+      <figure style="margin-top:8px;margin-right:0px;margin-bottom:20px;margin-left:0px">
+        <p style="margin:0;padding:24px 12px;border:1px dashed #B86A12;border-radius:8px;background-color:#FBF1E4;color:#B86A12;font-size:14px;text-align:center;">【在这里插入图片：图解1：三张表其实是一张表（images/01-logic.png）】</p>
+      </figure>
+      <p style="text-align:justify;margin-top:0px;margin-right:0px;margin-bottom:16px;margin-left:0px">现金流量表讲“货币资金”怎么变，利润表讲“未分配利润”怎么变。它们都是从资产负债表里<strong style="color:rgb(31, 42, 55);font-weight:bold">拆出来的明细</strong>。</p>
+      <p style="text-align:justify;margin-top:0px;margin-right:0px;margin-bottom:16px;margin-left:0px">再往下一层是<strong style="color:rgb(31, 42, 55);font-weight:bold">复式记账</strong>：每笔业务都同时记在两个地方。把奶茶店的 8 笔业务逐笔拆开看：</p>
+      <figure style="margin-top:8px;margin-right:0px;margin-bottom:20px;margin-left:0px">
+        <p style="margin:0;padding:24px 12px;border:1px dashed #B86A12;border-radius:8px;background-color:#FBF1E4;color:#B86A12;font-size:14px;text-align:center;">【在这里插入图片：图解2：一笔业务三张表一起动（images/02-trace.png）】</p>
+      </figure>
+      <p style="text-align:justify;margin-top:0px;margin-right:0px;margin-bottom:16px;margin-left:0px">最后，把会计恒等式移一下项，间接法就自己“长”出来了：</p>
+      <figure style="margin-top:8px;margin-right:0px;margin-bottom:20px;margin-left:0px">
+        <p style="margin:0;padding:24px 12px;border:1px dashed #B86A12;border-radius:8px;background-color:#FBF1E4;color:#B86A12;font-size:14px;text-align:center;">【在这里插入图片：图解3：间接法就是恒等式变个形（images/03-derivation.png）】</p>
+      </figure>
+
+      <h2 style="color:rgb(31, 42, 55);font-size:19px;font-weight:bold;line-height:28.5px;margin-top:40px;margin-right:0px;margin-bottom:16px;margin-left:0px;padding-bottom:8px;border-bottom:1px solid rgb(221, 227, 234)"><strong style="font-weight:bold;color:rgb(31, 42, 55)">五、间接法详解：从净利润到经营现金流</strong></h2>
+      <p style="text-align:justify;margin-top:0px;margin-right:0px;margin-bottom:16px;margin-left:0px">年报里的<strong style="color:rgb(31, 42, 55);font-weight:bold">现金流量表补充资料</strong>，会把净利润一步步调成经营现金流。调整项看着多，其实只有四类：</p>
+      <figure style="margin-top:8px;margin-right:0px;margin-bottom:20px;margin-left:0px">
+        <p style="margin:0;padding:24px 12px;border:1px dashed #B86A12;border-radius:8px;background-color:#FBF1E4;color:#B86A12;font-size:14px;text-align:center;">【在这里插入图片：图解4：间接法四类调整（images/04-indirect.png）】</p>
+      </figure>
+      <p style="text-align:justify;margin-top:0px;margin-right:0px;margin-bottom:16px;margin-left:0px">放回奶茶店，这座从净利润到经营现金流的“桥”是这样走的：</p>
+      <figure style="margin-top:8px;margin-right:0px;margin-bottom:20px;margin-left:0px">
+        <p style="margin:0;padding:24px 12px;border:1px dashed #B86A12;border-radius:8px;background-color:#FBF1E4;color:#B86A12;font-size:14px;text-align:center;">【在这里插入图片：图解5：奶茶店的净利润到现金流之桥（images/05-bridge-shop.png）】</p>
+      </figure>
+      <p style="text-align:justify;margin-top:0px;margin-right:0px;margin-bottom:16px;margin-left:0px">换成一家典型公司（示例数据），四类调整都会出现：</p>
+      <figure style="margin-top:8px;margin-right:0px;margin-bottom:20px;margin-left:0px">
+        <p style="margin:0;padding:24px 12px;border:1px dashed #B86A12;border-radius:8px;background-color:#FBF1E4;color:#B86A12;font-size:14px;text-align:center;">【在这里插入图片：图解6：完整版的净利润到现金流之桥（images/06-bridge-full.png）】</p>
+      </figure>
+      <p style="text-align:justify;margin-top:0px;margin-right:0px;margin-bottom:16px;margin-left:0px">读这座桥，最该盯的是<strong style="color:rgb(31, 42, 55);font-weight:bold">营运资本</strong>。如果它年年大额为负，说明增长靠赊销和备货撑着，利润迟迟变不成现金。</p>
+
+      <h2 style="color:rgb(31, 42, 55);font-size:19px;font-weight:bold;line-height:28.5px;margin-top:40px;margin-right:0px;margin-bottom:16px;margin-left:0px;padding-bottom:8px;border-bottom:1px solid rgb(221, 227, 234)"><strong style="font-weight:bold;color:rgb(31, 42, 55)">六、一张图记住三表联动</strong></h2>
+      <figure style="margin-top:8px;margin-right:0px;margin-bottom:20px;margin-left:0px">
+        <p style="margin:0;padding:24px 12px;border:1px dashed #B86A12;border-radius:8px;background-color:#FBF1E4;color:#B86A12;font-size:14px;text-align:center;">【在这里插入图片：三表联动关系图（images/linkage.png）】</p>
+        <figcaption style="color:rgb(102, 112, 128);font-size:13px;line-height:24.05px;text-align:center;margin-top:8px">三表联动关系图（单位：万元）</figcaption>
+      </figure>
+      <p style="text-align:justify;margin-top:0px;margin-right:0px;margin-bottom:16px;margin-left:0px">换个角度看：<strong style="color:rgb(31, 42, 55);font-weight:bold">资产负债表是主角</strong>。年初拍一张照片，年末再拍一张，中间发生的事由另外两张表解释：</p>
+      <ul style="margin-top:0px;margin-right:0px;margin-bottom:16px;margin-left:0px;padding-left:22px">
+        <li style="margin-top:0px;margin-right:0px;margin-bottom:6px;margin-left:0px"><strong style="color:rgb(31, 42, 55);font-weight:bold">利润表</strong>解释了“未分配利润”为什么变了</li>
+        <li style="margin-top:0px;margin-right:0px;margin-bottom:6px;margin-left:0px"><strong style="color:rgb(31, 42, 55);font-weight:bold">现金流量表</strong>解释了“货币资金”为什么变了</li>
+        <li style="margin-top:0px;margin-right:0px;margin-bottom:6px;margin-left:0px">其余科目的变动，解释了<strong style="color:rgb(31, 42, 55);font-weight:bold">利润和现金之间的差距</strong></li>
+      </ul>
+      <p style="text-align:justify;margin-top:0px;margin-right:0px;margin-bottom:16px;margin-left:0px">浓缩成一句口诀：</p>
+      <p style="color:rgb(255, 255, 255);font-size:18px;font-weight:bold;line-height:33.3px;letter-spacing:2px;text-align:center;margin-top:8px;margin-right:0px;margin-bottom:24px;margin-left:0px;padding-top:16px;padding-right:16px;padding-bottom:16px;padding-left:16px;background-color:rgb(31, 42, 55);border-radius:8px">利润进权益，现金对货币，变动解差异</p>
+
+      <h2 style="color:rgb(31, 42, 55);font-size:19px;font-weight:bold;line-height:28.5px;margin-top:40px;margin-right:0px;margin-bottom:16px;margin-left:0px;padding-bottom:8px;border-bottom:1px solid rgb(221, 227, 234)"><strong style="font-weight:bold;color:rgb(31, 42, 55)">七、学会勾稽，能用来做什么？</strong></h2>
+
+      <h3 style="color:rgb(31, 42, 55);font-size:17px;font-weight:bold;line-height:25.5px;margin-top:28px;margin-right:0px;margin-bottom:12px;margin-left:0px"><strong style="font-weight:bold;color:rgb(31, 42, 55)">1. 检查账做得对不对</strong></h3>
+      <p style="text-align:justify;margin-top:0px;margin-right:0px;margin-bottom:16px;margin-left:0px">三条线只要有一条对不上，账一定有错。会计编完报表，第一件事就是核对勾稽关系。</p>
+
+      <h3 style="color:rgb(31, 42, 55);font-size:17px;font-weight:bold;line-height:25.5px;margin-top:28px;margin-right:0px;margin-bottom:12px;margin-left:0px"><strong style="font-weight:bold;color:rgb(31, 42, 55)">2. 看利润的“含金量”</strong></h3>
+      <p style="color:rgb(31, 42, 55);font-weight:bold;text-align:center;margin-top:0px;margin-right:0px;margin-bottom:16px;margin-left:0px;padding-top:12px;padding-right:16px;padding-bottom:12px;padding-left:16px;background-color:rgb(243, 245, 248);border-radius:8px">净现比 = 经营活动现金流 ÷ 净利润</p>
+      <p style="text-align:justify;margin-top:0px;margin-right:0px;margin-bottom:16px;margin-left:0px">这个比值长期大于 1，说明利润基本都变成了现金；长期远小于 1，甚至为负，就要问一句：钱去哪了？</p>
+      <p style="text-align:justify;margin-top:0px;margin-right:0px;margin-bottom:16px;margin-left:0px">奶茶店的净现比是 3 ÷ 4 = 0.75，主要是团购款还没收回来，问题不大。</p>
+
+      <h3 style="color:rgb(31, 42, 55);font-size:17px;font-weight:bold;line-height:25.5px;margin-top:28px;margin-right:0px;margin-bottom:12px;margin-left:0px"><strong style="font-weight:bold;color:rgb(31, 42, 55)">3. 发现风险信号</strong></h3>
+      <ul style="margin-top:0px;margin-right:0px;margin-bottom:16px;margin-left:0px;padding-left:22px">
+        <li style="margin-top:0px;margin-right:0px;margin-bottom:6px;margin-left:0px"><strong style="color:rgb(31, 42, 55);font-weight:bold">利润年年涨，经营现金流却常年流出</strong>：可能大量赊销、存货积压，严重的甚至是虚增收入</li>
+        <li style="margin-top:0px;margin-right:0px;margin-bottom:6px;margin-left:0px"><strong style="color:rgb(31, 42, 55);font-weight:bold">应收账款增速远远超过收入增速</strong>：收入的质量要打个问号</li>
+        <li style="margin-top:0px;margin-right:0px;margin-bottom:6px;margin-left:0px"><strong style="color:rgb(31, 42, 55);font-weight:bold">账上躺着大笔现金，却同时借了大量高息贷款</strong>（俗称“存贷双高”）：要警惕这些钱是否真实、能否动用</li>
+      </ul>
+      <p style="color:rgb(102, 112, 128);font-size:15px;line-height:26.25px;text-align:justify;margin-top:0px;margin-right:0px;margin-bottom:16px;margin-left:0px;padding-top:12px;padding-right:16px;padding-bottom:12px;padding-left:16px;background-color:rgb(243, 245, 248);border-radius:8px">单个信号不等于有问题，一定要结合行业特点和财报附注一起看。</p>
+
+      <h2 style="color:rgb(31, 42, 55);font-size:19px;font-weight:bold;line-height:28.5px;margin-top:40px;margin-right:0px;margin-bottom:16px;margin-left:0px;padding-bottom:8px;border-bottom:1px solid rgb(221, 227, 234)"><strong style="font-weight:bold;color:rgb(31, 42, 55)">写在最后</strong></h2>
+      <p style="text-align:justify;margin-top:0px;margin-right:0px;margin-bottom:16px;margin-left:0px">三张表，讲的是同一个故事：</p>
+      <ul style="margin-top:0px;margin-right:0px;margin-bottom:16px;margin-left:0px;padding-left:22px">
+        <li style="margin-top:0px;margin-right:0px;margin-bottom:6px;margin-left:0px"><strong style="color:rgb(31, 42, 55);font-weight:bold">资产负债表</strong>告诉你：家底有多厚</li>
+        <li style="margin-top:0px;margin-right:0px;margin-bottom:6px;margin-left:0px"><strong style="color:rgb(31, 42, 55);font-weight:bold">利润表</strong>告诉你：本事有多大</li>
+        <li style="margin-top:0px;margin-right:0px;margin-bottom:6px;margin-left:0px"><strong style="color:rgb(31, 42, 55);font-weight:bold">现金流量表</strong>告诉你：日子过得紧不紧</li>
+      </ul>
+      <p style="text-align:justify;margin-top:0px;margin-right:0px;margin-bottom:16px;margin-left:0px">财务圈有句老话：<strong style="color:rgb(31, 42, 55);font-weight:bold">“利润是观点，现金是事实。”</strong>利润里有不少会计判断，现金却是实打实的进出。</p>
+      <p style="text-align:justify;margin-top:0px;margin-right:0px;margin-bottom:16px;margin-left:0px">下次翻财报，不妨先拿这三条线核一核。</p>
+      <hr style="color:rgb(128, 128, 128);margin-top:32px;margin-bottom:32px;border-top:1px solid rgb(221, 227, 234)">
+      <p style="color:rgb(102, 112, 128);font-size:13px;line-height:24.05px;text-align:justify;margin-top:0px;margin-right:0px;margin-bottom:16px;margin-left:0px">注：为便于理解，本文例子未考虑税费、利息和盈余公积等，实际财报会更复杂，但勾稽原理相同。</p>
+      <p style="color:rgb(31, 42, 55);font-weight:bold;text-align:center;margin-top:0px;margin-right:0px;margin-bottom:16px;margin-left:0px">你觉得三张表里哪张最难懂？欢迎在评论区聊聊。</p>
+    </section>
+</div>
+</body>
+</html>

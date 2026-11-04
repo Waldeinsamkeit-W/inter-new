@@ -1,3 +1,4 @@
+<meta charset="utf-8">
 <title>三表联动推文</title>
 <meta name="claude:viewport-fit-sides" content="cover">
 <style>
@@ -180,7 +181,7 @@
       <button type="button" class="primary" id="copyArticle">复制正文（带排版）</button>
       <span class="status" id="status" role="status" aria-live="polite"></span>
     </div>
-    <p class="hint">复制后直接粘贴到公众号编辑器的正文区。图片不会随文字一起过去：正文里会在每张图的位置留一个“在这里插入图片”的提示框（共 7 张），把对应图片保存下来，在提示框处插入即可。</p>
+    <p class="hint">请在<b>电脑浏览器</b>打开公众号后台，粘贴到正文区（手机上粘贴可能丢失排版）。图片不会随文字过去：每张图的位置留有“在这里插入图片”提示框（共 7 张），插入对应图片后删掉提示框。如果粘贴后仍没有标题和加粗，改用仓库里的 <code>wechat-paste.html</code>：电脑浏览器打开，Ctrl+A 全选、Ctrl+C 复制，再粘贴。</p>
   </header>
 
   <div class="switch" role="tablist" aria-label="版本">
@@ -455,15 +456,21 @@
   var BOX = ['margin-top', 'margin-right', 'margin-bottom', 'margin-left', 'padding-top', 'padding-right', 'padding-bottom', 'padding-left'];
   var SIDES = ['top', 'right', 'bottom', 'left'];
 
+  // Editors (WeChat included) rewrite <strong style="font-weight:700"> into a plain <span>
+  // on paste, and drop a heading's own font-weight. Keywords keep the tags intact.
+  function weightKeyword(v) { return Number(v) >= 600 ? 'bold' : (Number(v) > 0 ? 'normal' : v); }
+
   function inlineStyle(el, parentCS) {
     var cs = getComputedStyle(el), out = [];
     INHERITED.forEach(function (p) {
       var v = cs.getPropertyValue(p);
-      if (!parentCS || parentCS.getPropertyValue(p) !== v) out.push(p + ':' + v);
+      if (!parentCS || parentCS.getPropertyValue(p) !== v) out.push(p + ':' + (p === 'font-weight' ? weightKeyword(v) : v));
     });
+    // Block elements always state their margins: editors give a bare <p> its own default spacing.
+    var isBlock = /^(P|H2|H3|UL|OL|LI|SECTION|TABLE|FIGURE|DIV)$/.test(el.tagName);
     BOX.forEach(function (p) {
       var v = cs.getPropertyValue(p);
-      if (v && v !== '0px') out.push(p + ':' + v);
+      if (v && (v !== '0px' || (isBlock && p.indexOf('margin') === 0))) out.push(p + ':' + v);
     });
     SIDES.forEach(function (s) {
       var w = cs.getPropertyValue('border-' + s + '-width');
@@ -499,44 +506,62 @@
       p.textContent = '【在这里插入图片：' + img.getAttribute('data-name') + '（' + img.getAttribute('data-file') + '）】';
       img.parentNode.replaceChild(p, img);
     });
+    Array.prototype.slice.call(clone.querySelectorAll('h2, h3')).forEach(function (h) {
+      var strong = document.createElement('strong');
+      var hs = h.getAttribute('style') || '';
+      var color = (hs.match(/(?:^|;)color:([^;]+)/) || [])[1];
+      strong.setAttribute('style', 'font-weight:bold' + (color ? ';color:' + color : ''));
+      // keep the grey sub-title line (display:block span) outside the bold run
+      while (h.firstChild && !(h.firstChild.nodeType === 1 && /display:block/.test(h.firstChild.getAttribute('style') || ''))) {
+        strong.appendChild(h.firstChild);
+      }
+      h.insertBefore(strong, h.firstChild);
+    });
     var wrap = document.createElement('section');
     wrap.setAttribute('style', clone.getAttribute('style'));
     while (clone.firstChild) wrap.appendChild(clone.firstChild);
     return wrap;
   }
 
-  document.getElementById('copyArticle').addEventListener('click', function () {
-    var node = buildArticleHTML();
-    var html = node.outerHTML;
-    var text = document.getElementById('article').innerText;
-    var ok = function () { say('已复制。打开公众号编辑器，在正文区粘贴即可。'); };
+  window.__buildWechatHTML = function () { return buildArticleHTML().outerHTML; };
 
-    function legacyCopy() {
-      var holder = document.createElement('div');
-      holder.setAttribute('aria-hidden', 'true');
-      holder.style.cssText = 'position:fixed;left:-10000px;top:0;width:600px;background:#FFFFFF;';
-      holder.appendChild(node);
-      document.body.appendChild(holder);
-      selectNode(holder);
-      var copied = false;
-      try { copied = document.execCommand('copy'); } catch (e) { copied = false; }
-      window.getSelection().removeAllRanges();
-      document.body.removeChild(holder);
-      if (copied) { ok(); return; }
+  // Native copy: hand the browser our exact HTML through the copy event.
+  function copyViaEvent(html, text) {
+    var wrote = false;
+    function onCopy(e) {
+      e.clipboardData.setData('text/html', html);
+      e.clipboardData.setData('text/plain', text);
+      e.preventDefault();
+      wrote = true;
+    }
+    document.addEventListener('copy', onCopy, true);
+    selectNode(document.getElementById('article'));
+    var ok = false;
+    try { ok = document.execCommand('copy'); } catch (e) { ok = false; }
+    document.removeEventListener('copy', onCopy, true);
+    window.getSelection().removeAllRanges();
+    return ok && wrote;
+  }
+
+  document.getElementById('copyArticle').addEventListener('click', function () {
+    var html = buildArticleHTML().outerHTML;
+    var text = document.getElementById('article').innerText;
+    var ok = function () { say('已复制。打开电脑版公众号后台，在正文区粘贴即可。'); };
+    var manual = function () {
       selectNode(document.getElementById('article'));
       say('浏览器不允许自动复制。正文已选中，请按 Ctrl+C（Mac 按 ⌘C）。', true);
-    }
-
+    };
+    if (copyViaEvent(html, text)) { ok(); return; }
     try {
       if (navigator.clipboard && window.ClipboardItem) {
         navigator.clipboard.write([new ClipboardItem({
           'text/html': new Blob([html], { type: 'text/html' }),
           'text/plain': new Blob([text], { type: 'text/plain' })
-        })]).then(ok, legacyCopy);
+        })]).then(ok, manual);
         return;
       }
     } catch (e) { /* fall through */ }
-    legacyCopy();
+    manual();
   });
 
   /* ---- view switch: text article vs. 20-page image version ---- */
