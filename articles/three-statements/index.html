@@ -133,6 +133,15 @@
   .post .fig figcaption { margin-top: 8px; font-size: 13px; color: var(--muted); text-align: center; }
   .post .foot { font-size: 13px; color: var(--muted); }
   .post .ask { text-align: center; font-weight: 700; color: var(--ink); }
+
+  /* ---------- view switch + image version ---------- */
+  .switch { display: grid; grid-template-columns: 1fr 1fr; gap: 4px; padding: 4px; background: #DCE1E8; border-radius: 10px; }
+  .switch button { border: 0; background: transparent; font-size: 14px; padding: 9px 10px; color: var(--muted); }
+  .switch button[aria-selected="true"] { background: var(--paper); color: var(--ink); font-weight: 600; box-shadow: 0 1px 2px rgba(31, 42, 55, 0.12); }
+  .gallery { display: grid; gap: 14px; }
+  .gallery img { display: block; width: 100%; max-width: 100%; height: auto; border-radius: 10px; border: 1px solid var(--line); }
+  .gallery-note { margin: 0; font-size: 13px; line-height: 1.7; color: var(--muted); }
+  .caption-box { white-space: pre-line; }
 </style>
 
 <div class="page">
@@ -158,6 +167,15 @@
       <img class="cover" src="images/cover.png" alt="封面：三表联动，一家奶茶店讲透勾稽关系" width="900" height="383">
     </div>
 
+    <div class="field">
+      <div class="field-label">贴图文案（发“图片版”时用）</div>
+      <div class="row tall"><span id="cap" class="caption-box">第一次看财报，常被三张表绕晕。其实资产负债表、利润表、现金流量表，讲的是同一盘生意。
+这 20 张图用一家奶茶店一年的账，讲清三条勾稽线和背后的底层逻辑，再一步步搭起“净利润到经营现金流”的桥。
+口诀：利润进权益，现金对货币，变动解差异。
+你觉得哪张表最难懂？评论区聊聊。
+#财报 #财务分析 #会计</span><button type="button" data-copy="cap">复制</button></div>
+    </div>
+
     <div class="actions">
       <button type="button" class="primary" id="copyArticle">复制正文（带排版）</button>
       <span class="status" id="status" role="status" aria-live="polite"></span>
@@ -165,7 +183,12 @@
     <p class="hint">复制后直接粘贴到公众号编辑器的正文区。图片不会随文字一起过去：正文里会在每张图的位置留一个“在这里插入图片”的提示框（共 7 张），把对应图片保存下来，在提示框处插入即可。</p>
   </header>
 
-  <main class="phone">
+  <div class="switch" role="tablist" aria-label="版本">
+    <button type="button" role="tab" id="tab-text" aria-selected="true" aria-controls="view-text">图文版</button>
+    <button type="button" role="tab" id="tab-pages" aria-selected="false" aria-controls="view-pages">图片版 · 20 张</button>
+  </div>
+
+  <main class="phone" id="view-text" role="tabpanel" aria-labelledby="tab-text">
     <h1 class="post-title">一家奶茶店，讲透财报“三表联动”</h1>
     <p class="post-meta">财报入门 · 约 8 分钟读完</p>
 
@@ -371,6 +394,32 @@
       <p class="ask">你觉得三张表里哪张最难懂？欢迎在评论区聊聊。</p>
     </article>
   </main>
+
+  <section class="phone" id="view-pages" role="tabpanel" aria-labelledby="tab-pages" hidden>
+    <div class="gallery">
+      <p class="gallery-note">全文排成 20 张 3:4 图片（1080 × 1440），可以直接发“贴图”（图片消息最多 20 张），也可以按顺序插进图文。右键或长按保存，文件在仓库 <code>images/pages/</code> 目录。</p>
+      <img src="images/pages/01.png" alt="三表联动图片版第 1 页" width="1080" height="1440" loading="lazy">
+      <img src="images/pages/02.png" alt="三表联动图片版第 2 页" width="1080" height="1440" loading="lazy">
+      <img src="images/pages/03.png" alt="三表联动图片版第 3 页" width="1080" height="1440" loading="lazy">
+      <img src="images/pages/04.png" alt="三表联动图片版第 4 页" width="1080" height="1440" loading="lazy">
+      <img src="images/pages/05.png" alt="三表联动图片版第 5 页" width="1080" height="1440" loading="lazy">
+      <img src="images/pages/06.png" alt="三表联动图片版第 6 页" width="1080" height="1440" loading="lazy">
+      <img src="images/pages/07.png" alt="三表联动图片版第 7 页" width="1080" height="1440" loading="lazy">
+      <img src="images/pages/08.png" alt="三表联动图片版第 8 页" width="1080" height="1440" loading="lazy">
+      <img src="images/pages/09.png" alt="三表联动图片版第 9 页" width="1080" height="1440" loading="lazy">
+      <img src="images/pages/10.png" alt="三表联动图片版第 10 页" width="1080" height="1440" loading="lazy">
+      <img src="images/pages/11.png" alt="三表联动图片版第 11 页" width="1080" height="1440" loading="lazy">
+      <img src="images/pages/12.png" alt="三表联动图片版第 12 页" width="1080" height="1440" loading="lazy">
+      <img src="images/pages/13.png" alt="三表联动图片版第 13 页" width="1080" height="1440" loading="lazy">
+      <img src="images/pages/14.png" alt="三表联动图片版第 14 页" width="1080" height="1440" loading="lazy">
+      <img src="images/pages/15.png" alt="三表联动图片版第 15 页" width="1080" height="1440" loading="lazy">
+      <img src="images/pages/16.png" alt="三表联动图片版第 16 页" width="1080" height="1440" loading="lazy">
+      <img src="images/pages/17.png" alt="三表联动图片版第 17 页" width="1080" height="1440" loading="lazy">
+      <img src="images/pages/18.png" alt="三表联动图片版第 18 页" width="1080" height="1440" loading="lazy">
+      <img src="images/pages/19.png" alt="三表联动图片版第 19 页" width="1080" height="1440" loading="lazy">
+      <img src="images/pages/20.png" alt="三表联动图片版第 20 页" width="1080" height="1440" loading="lazy">
+    </div>
+  </section>
 </div>
 
 <script>
@@ -488,6 +537,18 @@
       }
     } catch (e) { /* fall through */ }
     legacyCopy();
+  });
+
+  /* ---- view switch: text article vs. 20-page image version ---- */
+  var tabs = [document.getElementById('tab-text'), document.getElementById('tab-pages')];
+  tabs.forEach(function (tab) {
+    tab.addEventListener('click', function () {
+      tabs.forEach(function (t) {
+        var on = t === tab;
+        t.setAttribute('aria-selected', on ? 'true' : 'false');
+        document.getElementById(t.getAttribute('aria-controls')).hidden = !on;
+      });
+    });
   });
 })();
 </script>
