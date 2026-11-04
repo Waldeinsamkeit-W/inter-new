@@ -724,6 +724,9 @@ def main() -> None:
     jobs_file.write_text(json.dumps(jobs, ensure_ascii=False), encoding="utf-8")
     subprocess.run(["node", str(HERE / "shoot.cjs"), str(jobs_file)], check=True)
     print(f"已生成 {len(jobs)} 张图：{OUT}")
+    import pack_tuwen  # 同步图文版配图文件夹
+
+    pack_tuwen.main()
 
 
 if __name__ == "__main__":
