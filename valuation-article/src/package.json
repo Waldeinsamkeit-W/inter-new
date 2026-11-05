@@ -1,0 +1,14 @@
+{
+  "name": "valuation-article-build",
+  "private": true,
+  "description": "生成配图与公众号排版 HTML",
+  "scripts": {
+    "model": "python3 model.py",
+    "figures": "node figures.cjs",
+    "build": "node build.cjs"
+  },
+  "devDependencies": {
+    "@fontsource/noto-sans-sc": "5.2.8",
+    "marked": "12.0.2"
+  }
+}
