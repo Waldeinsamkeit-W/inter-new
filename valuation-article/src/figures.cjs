@@ -481,8 +481,64 @@ function fig11() {
     '结论：股权价值约 110～125 亿元，对应每股 11.0～12.5 元（总股本 10 亿股）。先例交易含控制权溢价，不用于少数股权投资。'));
 }
 
-/* ---------- 图12 公式速查卡 ---------- */
+/* ---------- 图12 结论不一致时的处理流程 ---------- */
 function fig12() {
+  const steps = [
+    ['先查错误', '口径、时间、利润质量、稀释股本、DCF 技术细节', '有错就修正，重新计算'],
+    ['换算对比', 'DCF 换算成隐含倍数；市场倍数用反向 DCF 换算成隐含假设', '找到分歧集中在哪个假设'],
+    ['判断可信度', '数据是否扎实、行业和公司所处阶段、交易目的', '给各方法定权重'],
+    ['形成结论', '', ''],
+  ];
+  const ways = ['取重叠区间', '加权平均', '主方法 + 校验'];
+  const css = `
+.gauge{margin-bottom:22px}
+.gt{font-size:16px;font-weight:700;margin-bottom:8px}
+.bar3{display:flex;gap:2px}
+.bar3 div{flex:1;border-radius:4px;padding:8px 10px;font-size:14px;line-height:1.35}
+.bar3 b{display:block;font-size:16px;font-weight:900}
+.list{display:flex;flex-direction:column}
+.st{display:grid;grid-template-columns:40px 1fr;gap:14px;position:relative;padding-bottom:16px}
+.st:not(:last-child)::before{content:"";position:absolute;left:19px;top:40px;bottom:0;width:2px;background:${C.grid}}
+.n{width:40px;height:40px;border-radius:50%;background:${C.brand};color:#fff;font-size:19px;font-weight:900;display:flex;align-items:center;justify-content:center}
+.tx{min-width:0;padding-top:1px}
+.tx b{font-size:19px;font-weight:900}
+.tx p{font-size:16px;color:${C.ink2};margin-top:4px;line-height:1.55}
+.tx .to{font-size:15px;color:${C.ink};margin-top:4px;font-weight:500}
+.tx .to::before{content:"→ ";color:${C.orange};font-weight:900}
+.ways{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px}
+.ways span{background:${C.blue50};color:${C.brand};font-weight:900;font-size:15px;border-radius:6px;padding:4px 10px}
+.side{margin:2px 0 0 54px;border:1px dashed ${C.axis};border-radius:8px;padding:10px 12px;font-size:15px;color:${C.ink2};line-height:1.6}
+.side b{color:${C.ink}}
+.ex{margin-top:18px;background:${C.panel};border-radius:10px;padding:14px 16px}
+.ex h3{font-size:16px;font-weight:900;margin-bottom:8px}
+.ex .r{display:grid;grid-template-columns:76px 1fr;gap:10px;font-size:15px;line-height:1.55;padding:5px 0;border-top:1px solid ${C.grid}}
+.ex .r:first-of-type{border-top:none}
+.ex .r em{font-style:normal;color:${C.muted}}
+.ex .r span b{font-weight:900}`;
+  const g = M.growth_for_comps, dcfEq = M.base.equity, impliedPe = dcfEq / 5;
+  const inner = `
+    <div class="gauge">
+      <div class="gt">主要方法之间相差多少？</div>
+      <div class="bar3">
+        <div style="background:#86b6ef;color:${C.ink}"><b>15% 以内</b>基本一致</div>
+        <div style="background:#3987e5;color:#fff"><b>15%～30%</b>说清原因</div>
+        <div style="background:#1c5cab;color:#fff"><b>30% 以上</b>查明原因再下结论</div>
+      </div>
+    </div>
+    <div class="list">${steps.map(([t, d, o], i) => `<div class="st"><div class="n">${i + 1}</div><div class="tx"><b>${t}</b>${d ? `<p>${d}</p><div class="to">${o}</div>` : `<div class="ways">${ways.map((w) => `<span>${w}</span>`).join('')}</div>`}</div></div>`).join('')}</div>
+    <div class="side"><b>还是解释不清？</b>扩大区间、改用情景分析，并在报告里如实写明各方法的结果和取舍理由。</div>
+    <div class="ex">
+      <h3>小鲜饮品示例</h3>
+      <div class="r"><em>分歧</em><span>DCF <b>${f1(dcfEq)} 亿元</b>，可比公司 PE 中位数对应 <b>125 亿元</b></span></div>
+      <div class="r"><em>换算</em><span>DCF 隐含 PE ${f1(impliedPe)} 倍，低于同行的 25 倍；要达到 125 亿元，营收需年增约 <b>${pct(g)}</b>，基准假设约 9%</span></div>
+      <div class="r"><em>结论</em><span>差距在参数的合理波动范围内。取重叠区间 <b>110～125 亿元</b>，加权平均约 ${f1(M.weighted)} 亿元</span></div>
+    </div>`;
+  return page(frame('图 12', '估值结论不一致，怎么办？', '先查错误，再找分歧，然后判断可信度，最后才下结论', inner,
+    '15% 和 30% 是经验尺度，不是硬性标准。'), { extraCss: css });
+}
+
+/* ---------- 图13 公式速查卡 ---------- */
+function fig13() {
   const groups = [
     ['相对估值', C.blue, [
       ['PE', '市值 ÷ 净利润'], ['PB', '市值 ÷ 净资产 = PE × ROE'], ['PS', '市值 ÷ 营收 = PE × 净利率'],
@@ -510,7 +566,7 @@ function fig12() {
 .abbr{font-size:13.5px;color:${C.muted};line-height:1.7;margin-top:4px}`;
   const inner = groups.map(([name, col, items]) => `<div class="g"><h2><i style="background:${col}"></i>${name}</h2>${items.map(([k, v]) => `<div class="r"><b>${k}</b><span>${v}</span></div>`).join('')}</div>`).join('') +
     `<div class="abbr">t：税率　g：增长率　Ke：股权成本　Kd：债务成本　Rf：无风险利率　ERP：市场风险溢价　E/V、D/V：股权、债务占总资本比重　D₁：下一年每股股利</div>`;
-  return page(frame('图 12', '估值公式速查卡', '建议保存，建模时随手对照', inner, ''), { extraCss: css });
+  return page(frame('图 13', '估值公式速查卡', '建议保存，建模时随手对照', inner, ''), { extraCss: css });
 }
 
 /* ---------- 封面 ---------- */
@@ -570,7 +626,8 @@ const FIGS = {
   'fig09-method-selector': [fig09],
   'fig10-workflow': [fig10],
   'fig11-football-field': [fig11],
-  'fig12-cheatsheet': [fig12],
+  'fig12-divergence': [fig12],
+  'fig13-cheatsheet': [fig13],
 };
 
 (async () => {

@@ -76,6 +76,14 @@ def main():
     implied_g = solve(lambda g: dcf(rows, WACC, g)["equity"], 150, 0.0, 0.08)
     implied_growth = solve(lambda x: dcf(forecast([x] * 4))["equity"], 150, 0.0, 0.6)
 
+    # 结论不一致时的拆解：要达到可比公司中位数（25 倍 × 5 亿元 = 125 亿元）需要什么增速
+    comps_median_equity = 25 * 5.0
+    growth_for_comps = solve(lambda x: dcf(forecast([x] * 4))["equity"], comps_median_equity, 0.0, 0.6)
+    # 常见技术错误示例：终值忘记折现
+    tv_not_discounted = base["pv_sum"] + base["tv"] + BRIDGE
+    # 加权平均：DCF 40%，PE 法与 EV/EBITDA 法各 30%（取区间中值）
+    weighted = 0.4 * base["equity"] + 0.3 * (110 + 130) / 2 + 0.3 * (105 + 130) / 2
+
     # 稳态自洽检查：再投资率与隐含 ROIC
     reinvest = 1 - rows[-1]["fcff"] / rows[-1]["nopat"]
 
@@ -85,6 +93,7 @@ def main():
         implied_g_150=implied_g, implied_growth_150=implied_growth,
         reinvest=reinvest, implied_roic=G / reinvest,
         implied_exit_multiple=base["tv"] / rows[-1]["ebitda"],
+        growth_for_comps=growth_for_comps, tv_not_discounted=tv_not_discounted, weighted=weighted,
     )
 
     print(f"Ke = {ke:.2%}, WACC = {wacc_calc:.3%}（取 {WACC:.1%}）")
@@ -99,6 +108,9 @@ def main():
           f"隐含退出倍数 {out['implied_exit_multiple']:.1f}x")
     print(f"WACC 8–9%、g 2–3% 区间：{min(band):.1f}–{max(band):.1f} 亿元")
     print(f"反向 DCF（市值 150 亿）：隐含永续增长 {implied_g:.2%}；或 2028–31 年营收年增 {implied_growth:.1%}")
+    print(f"要达到可比公司中位数 125 亿元：2028–31 年营收需年增 {growth_for_comps:.1%}")
+    print(f"终值忘记折现时股权价值 {tv_not_discounted:.1f} 亿元（虚高 {tv_not_discounted / base['equity'] - 1:.1%}）")
+    print(f"加权平均（DCF 40% / PE 30% / EV/EBITDA 30%）：{weighted:.1f} 亿元")
     print(f"稳态再投资率 {reinvest:.1%}，隐含 ROIC {G / reinvest:.1%}")
     print("敏感性（每股，元）：")
     for w, line in zip(waccs, sens):

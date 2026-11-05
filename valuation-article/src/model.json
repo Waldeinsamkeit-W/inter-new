@@ -138,5 +138,8 @@
  "implied_growth_150": 0.24421350490728078,
  "reinvest": 0.09681197137280406,
  "implied_roic": 0.2582325268817207,
- "implied_exit_multiple": 9.588308625336927
+ "implied_exit_multiple": 9.588308625336927,
+ "growth_for_comps": 0.1664096500847957,
+ "tv_not_discounted": 145.44744805424332,
+ "weighted": 113.5750726814154
 }
