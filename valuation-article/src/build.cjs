@@ -147,7 +147,7 @@ function shell(coverSrc, squareSrc) {
       <ol>
         <li>在公众号后台新建图文，标题填写：${title}</li>
         <li>点击上方“复制正文”，在正文编辑区粘贴。</li>
-        <li>检查配图。如果某张图粘贴后不显示或保存时报错，删掉它，在原位置上传仓库 images 文件夹里同编号的图片（fig01～fig13）。</li>
+        <li>检查配图。如果某张图粘贴后不显示或保存时报错，删掉它，在原位置上传仓库 images 文件夹里同编号的图片（fig01～fig16）。</li>
         <li>上传封面：头图用 cover.png（2.35:1），分享卡片用 cover-square.png（1:1）。</li>
         <li>粘贴摘要，预览到手机上通读一遍再群发。</li>
       </ol>

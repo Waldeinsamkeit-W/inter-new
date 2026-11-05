@@ -28,7 +28,7 @@ const RAMP = ['#cde2fb', '#b7d3f6', '#9ec5f4', '#86b6ef', '#6da7ec', '#5598e7', 
 
 const f2 = (x) => x.toFixed(2);
 const f1 = (x) => x.toFixed(1);
-const pct = (x, d = 1) => (x * 100).toFixed(d) + '%';
+const pct = (x, d = 1) => (x * 100).toFixed(d).replace(/^-/, '−') + '%';
 
 function page(body, { width = W, extraCss = '' } = {}) {
   const fonts = [400, 500, 700, 900]
@@ -537,13 +537,135 @@ function fig12() {
     '15% 和 30% 是经验尺度，不是硬性标准。'), { extraCss: css });
 }
 
-/* ---------- 图13 公式速查卡 ---------- */
+/* ---------- 图13 杠杆与 PE ---------- */
 function fig13() {
+  const { a, b, b_hike: h } = M.adv.leverage;
+  const row = (label, va, vb, cls = '') => `<tr class="${cls}"><td class="l">${label}</td><td>${va}</td><td>${vb}</td></tr>`;
+  const css = `
+table{width:100%;border-collapse:collapse;font-size:16px}
+th{font-size:15px;font-weight:700;color:${C.ink2};text-align:right;padding:0 8px 10px;border-bottom:2px solid ${C.ink};line-height:1.35}
+th.l,td.l{text-align:left;padding-left:2px}
+td{text-align:right;padding:9px 8px;border-bottom:1px solid ${C.grid};white-space:nowrap}
+td.l{white-space:normal}
+tr.sec td{color:${C.muted};font-size:13.5px;padding-top:14px;border-bottom:none}
+tr.same td{background:${C.blue50};font-weight:900;color:${C.brand}}
+tr.diff td{background:${C.orange50};font-weight:900}
+.tag{font-size:12.5px;font-weight:700;border-radius:4px;padding:0 5px;margin-left:6px;vertical-align:1px}
+.tag.s{color:${C.brand};border:1px solid ${C.brand}}
+.tag.d{color:${C.orange};border:1px solid ${C.orange}}
+.call{margin-top:16px;background:${C.panel};border-radius:8px;padding:12px 14px;font-size:15.5px;line-height:1.65}
+.call b{font-weight:900}`;
+  const inner = `
+    <table>
+      <thead><tr><th class="l">单位：亿元</th><th>A 公司<br>不借钱</th><th>B 公司<br>借 ${b.net_debt} 亿元</th></tr></thead>
+      <tbody>
+        ${row('EBITDA', f1(a.ebitda), f1(b.ebitda))}
+        ${row('EBIT', f1(a.ebit), f1(b.ebit))}
+        ${row('利息（利率 6%）', '0', f1(b.interest))}
+        ${row('净利润（税率 25%）', f2(a.ni), f2(b.ni))}
+        ${row('EV', a.ev, b.ev)}
+        ${row('市值 = EV − 净负债', a.mcap, b.mcap)}
+        ${row('EV/EBITDA<span class="tag s">一样</span>', f1(a.ev_ebitda) + 'x', f1(b.ev_ebitda) + 'x', 'same')}
+        ${row('PE<span class="tag d">不一样</span>', f1(a.pe) + 'x', f1(b.pe) + 'x', 'diff')}
+        <tr class="sec"><td class="l" colspan="3">判断股东安不安全</td></tr>
+        ${row('净负债 ÷ EBITDA', '0', f1(b.nd_ebitda) + 'x')}
+        ${row('利息保障倍数', '—', f1(b.coverage) + 'x')}
+      </tbody>
+    </table>
+    <div class="call">利率从 6% 升到 8%：B 的利息变成 ${f1(h.interest)} 亿元，净利润从 ${f2(b.ni)} 亿元降到 <b>${f2(h.ni)} 亿元（${pct(h.ni / b.ni - 1, 0)}）</b>，经营没有任何变化。A 不受影响，两家的 EV/EBITDA 仍然都是 10 倍。</div>`;
+  return page(frame('图 13', '同一门生意，杠杆不同，PE 完全不同', 'B 的 PE 看起来更便宜，其实买下整个生意的价格一模一样', inner,
+    '虚构示例。为便于理解，未考虑利息抵税对估值的影响。'), { extraCss: css });
+}
+
+/* ---------- 图14 发债对 EV 与股权价值的影响 ---------- */
+function fig14() {
+  const sc = M.adv.issuance;
+  const w = W - 52, padL = 34, padR = 4, top = 30, h = 260, base = top + h, max = 140;
+  const y = (v) => base - (v / max) * h;
+  const step = (w - padL - padR) / sc.length, bw = 46;
+  let s = '';
+  [0, 35, 70, 105, 140].forEach((t) => { s += `<line x1="${padL}" x2="${w - padR}" y1="${y(t)}" y2="${y(t)}" stroke="${t === 0 ? C.axis : C.grid}"/><text x="${padL - 6}" y="${y(t) + 5}" font-size="13" fill="${C.muted}" text-anchor="end">${t}</text>`; });
+  sc.forEach((x, i) => {
+    const cx = padL + step * (i + 0.5), x0 = cx - bw / 2;
+    const yEq = y(x.equity), yEv = y(x.ev);
+    s += `<rect x="${x0}" y="${yEq}" width="${bw}" height="${base - yEq}" fill="${C.blue}"/>`;
+    s += `<path d="M${x0},${yEq - 2} V${yEv + 4} q0,-4 4,-4 H${x0 + bw - 4} q4,0 4,4 V${yEq - 2} Z" fill="${C.orange}"/>`;
+    s += `<text x="${cx}" y="${(yEq + base) / 2 + 6}" font-size="16" font-weight="700" fill="#fff" text-anchor="middle">${x.equity}</text>`;
+    s += `<text x="${cx}" y="${(yEv + yEq) / 2 + 5}" font-size="14" font-weight="700" fill="#fff" text-anchor="middle">${x.nd}</text>`;
+    s += `<text x="${cx}" y="${yEv - 9}" font-size="15" font-weight="900" fill="${C.ink}" text-anchor="middle">EV ${x.ev}</text>`;
+    s += `<text x="${cx}" y="${base + 21}" font-size="14" font-weight="700" fill="${C.ink}" text-anchor="middle">${x.name}</text>`;
+    if (x.note) s += `<text x="${cx}" y="${base + 40}" font-size="13" fill="${C.ink2}" text-anchor="middle">${x.note}</text>`;
+  });
+  s += `<text x="${padL}" y="14" font-size="14" fill="${C.muted}">亿元</text>`;
+  const d = sc.map((x) => x.equity - sc[0].equity);
+  const css = `
+.chg{display:grid;grid-template-columns:repeat(5,1fr);margin-left:${padL}px;margin-top:4px;border-top:1px solid ${C.grid}}
+.chg div{text-align:center;padding:8px 0 0;font-size:15px;font-weight:900}
+.chl{font-size:14px;color:${C.ink2};margin:12px 0 0}
+.rule{margin-top:14px;background:${C.panel};border-radius:8px;padding:12px 14px;font-size:15.5px;line-height:1.65}`;
+  const sign = (v) => (v > 0 ? '+' + v : v < 0 ? '−' + Math.abs(v) : '0');
+  const inner = `
+    <div class="legend"><span><i style="background:${C.blue}"></i>股权价值</span><span><i style="background:${C.orange}"></i>净负债</span></div>
+    <svg width="${w}" height="${base + 48}" viewBox="0 0 ${w} ${base + 48}">${s}</svg>
+    <div class="chl">股权价值相对发债前的变化（亿元）</div>
+    <div class="chg">${d.map((v, i) => `<div style="color:${v < 0 ? C.red : v > 0 ? C.blue : C.ink2}">${i === 0 ? '—' : sign(v)}${i === 2 ? '*' : ''}</div>`).join('')}</div>
+    <div class="rule">发债本身不改变 EV，也不改变股权价值。<b>钱拿去干什么</b>才决定结果：投到回报高于资金成本的地方，价值才会增加。</div>`;
+  return page(frame('图 14', '发债之后，EV 和股权价值怎么变', '原有 EV 100 亿元、净负债 20 亿元，新发 30 亿元债券', inner,
+    '* 30 亿元已经分给股东，股东的总财富仍是 80 亿元。示例未考虑利息抵税、财务困境风险和发行费用。'), { extraCss: css });
+}
+
+/* ---------- 图15 归一化 EBITDA 调整桥 ---------- */
+function fig15() {
+  const f = M.adv.fdd;
+  const maxAbs = Math.max(...f.adjustments.map(([, v]) => Math.abs(v)));
+  const half = 72;
+  const fmt = (v) => v.toLocaleString('en-US');
+  const rows = f.adjustments.map(([label, v]) => {
+    const wd = (Math.abs(v) / maxAbs) * half;
+    const bar = v < 0
+      ? `<span class="neg" style="width:${wd}px"></span>`
+      : `<span class="pos" style="width:${wd}px"></span>`;
+    return `<div class="r"><div class="lb">${label}</div><div class="bar">${bar}</div><div class="v" style="color:${v < 0 ? C.red : C.blue}">${v > 0 ? '+' : '−'}${fmt(Math.abs(v))}</div></div>`;
+  }).join('');
+  const css = `
+.r{display:grid;grid-template-columns:1fr ${half * 2 + 2}px 70px;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid ${C.grid}}
+.lb{font-size:16px;line-height:1.4;min-width:0}
+.bar{position:relative;height:16px;border-left:none}
+.bar::before{content:"";position:absolute;left:${half}px;top:-8px;bottom:-8px;width:1px;background:${C.axis}}
+.neg,.pos{position:absolute;top:0;height:16px;border-radius:3px}
+.neg{right:${half + 2}px;background:${C.red}}
+.pos{left:${half + 2}px;background:${C.blue}}
+.v{text-align:right;font-size:16px;font-weight:700}
+.tot{display:grid;grid-template-columns:1fr auto;align-items:baseline;padding:12px 0;font-size:17px;font-weight:900}
+.tot.top{border-bottom:2px solid ${C.ink}}
+.tot.end{border-top:2px solid ${C.ink};margin-top:-1px}
+.tot span:last-child{font-size:20px}
+.imp{margin-top:16px;display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.imp div{background:${C.panel};border-radius:8px;padding:12px 14px}
+.imp span{display:block;font-size:14px;color:${C.ink2};line-height:1.5}
+.imp b{display:block;font-size:20px;font-weight:900;margin-top:4px}
+.imp em{font-style:normal;font-size:14px;color:${C.red};font-weight:700}`;
+  const inner = `
+    <div class="legend"><span><i style="background:${C.red}"></i>调低</span><span><i style="background:${C.blue}"></i>调高</span><span style="margin-left:auto">单位：万元</span></div>
+    <div class="tot top"><span>报告 EBITDA</span><span>${fmt(f.reported)}</span></div>
+    ${rows}
+    <div class="tot end"><span>归一化 EBITDA</span><span>${fmt(f.normalized)}</span></div>
+    <div class="imp">
+      <div><span>按 ${f.multiple} 倍 EV/EBITDA，EV</span><b>${f1(f.ev_before)} → ${f1(f.ev_after)} 亿元</b><em>−${f1(f.ev_before - f.ev_after)} 亿元</em></div>
+      <div><span>再扣净负债 ${f1(f.net_debt)} 亿元和类债务 ${f1(f.debt_like)} 亿元，卖方拿到</span><b>${f1(f.ask)} → ${f1(f.after)} 亿元</b><em>−${f1(f.ask - f.after)} 亿元（${pct(f.after / f.ask - 1, 0)}）</em></div>
+    </div>`;
+  return page(frame('图 15', '归一化 EBITDA 调整桥', '某连锁餐饮公司（虚构）：EBITDA 少 1 元，估值少 10 元', inner,
+    '类债务 0.3 亿元为历史欠缴的社保公积金 0.2 亿元和应付未付奖金 0.1 亿元。社保每年少缴的部分调低 EBITDA，累计欠缴的部分作为类债务扣除。'), { extraCss: css });
+}
+
+/* ---------- 图16 公式速查卡 ---------- */
+function fig16() {
   const groups = [
     ['相对估值', C.blue, [
       ['PE', '市值 ÷ 净利润'], ['PB', '市值 ÷ 净资产 = PE × ROE'], ['PS', '市值 ÷ 营收 = PE × 净利率'],
       ['PEG', 'PE ÷ (净利润增速 × 100)'], ['EV', '市值 + 有息负债 − 现金 + 少数股东权益'],
       ['合理 PB', '(ROE − g) ÷ (Ke − g)'],
+      ['并购股权价格', '归一化 EBITDA × 倍数 − 净负债 − 类债务 ± 营运资本调整'],
     ]],
     ['绝对估值', C.orange, [
       ['FCFF', 'EBIT × (1 − t) + 折旧摊销 − 资本开支 − 营运资本增加'], ['FCFE', 'FCFF − 利息 × (1 − t) + 净借款'],
@@ -554,6 +676,7 @@ function fig13() {
     ['口径与检查', C.aqua, [
       ['口径匹配', 'EV 配 EBITDA / EBIT / 营收；市值配净利润 / 净资产'], ['折现匹配', 'FCFF 配 WACC；FCFE 配 Ke'],
       ['永续增长', 'g 不超过长期名义 GDP 增速'], ['稳态再投资', '再投资率 = g ÷ ROIC'], ['终值占比', '通常 60%～80%，过高要警惕'],
+      ['归一化 EBITDA', '剔除一次性、非经营和非公允项目后再乘倍数'], ['杠杆', '净负债 ÷ EBITDA；利息保障倍数 = EBITDA ÷ 利息'],
     ]],
   ];
   const css = `
@@ -566,7 +689,7 @@ function fig13() {
 .abbr{font-size:13.5px;color:${C.muted};line-height:1.7;margin-top:4px}`;
   const inner = groups.map(([name, col, items]) => `<div class="g"><h2><i style="background:${col}"></i>${name}</h2>${items.map(([k, v]) => `<div class="r"><b>${k}</b><span>${v}</span></div>`).join('')}</div>`).join('') +
     `<div class="abbr">t：税率　g：增长率　Ke：股权成本　Kd：债务成本　Rf：无风险利率　ERP：市场风险溢价　E/V、D/V：股权、债务占总资本比重　D₁：下一年每股股利</div>`;
-  return page(frame('图 13', '估值公式速查卡', '建议保存，建模时随手对照', inner, ''), { extraCss: css });
+  return page(frame('图 16', '估值公式速查卡', '建议保存，建模时随手对照', inner, ''), { extraCss: css });
 }
 
 /* ---------- 封面 ---------- */
@@ -627,7 +750,10 @@ const FIGS = {
   'fig10-workflow': [fig10],
   'fig11-football-field': [fig11],
   'fig12-divergence': [fig12],
-  'fig13-cheatsheet': [fig13],
+  'fig13-leverage-pe': [fig13],
+  'fig14-debt-issuance': [fig14],
+  'fig15-normalized-ebitda': [fig15],
+  'fig16-cheatsheet': [fig16],
 };
 
 (async () => {

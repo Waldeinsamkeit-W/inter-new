@@ -26,7 +26,10 @@ TITLES = {
     "fig10-workflow": "估值工作七步法",
     "fig11-football-field": "估值足球场图",
     "fig12-divergence": "估值结论不一致怎么办",
-    "fig13-cheatsheet": "估值公式速查卡",
+    "fig13-leverage-pe": "同一门生意杠杆不同PE不同",
+    "fig14-debt-issuance": "发债后EV和股权价值怎么变",
+    "fig15-normalized-ebitda": "归一化EBITDA调整桥",
+    "fig16-cheatsheet": "估值公式速查卡",
 }
 
 

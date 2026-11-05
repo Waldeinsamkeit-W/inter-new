@@ -61,6 +61,60 @@ def solve(f, target, lo, hi):
     return mid
 
 
+def advanced_examples():
+    """第十二部分「进阶六问」用到的示例（与小鲜饮品无关的独立虚构公司）。单位：亿元，调整桥为万元。"""
+    # 同一门生意、不同杠杆：EBITDA 25、EBIT 20、EV 250，B 借了 150 亿元
+    ebitda, ebit, ev = 25.0, 20.0, 250.0
+
+    def levered(net_debt, rate):
+        interest = net_debt * rate
+        ni = (ebit - interest) * (1 - TAX)
+        mcap = ev - net_debt
+        return dict(net_debt=net_debt, rate=rate, interest=interest, ni=ni, mcap=mcap, pe=mcap / ni,
+                    ev=ev, ebitda=ebitda, ebit=ebit, ev_ebitda=ev / ebitda, nd_ebitda=net_debt / ebitda,
+                    coverage=(ebitda / interest) if interest else None)
+
+    leverage = dict(a=levered(0, 0.06), b=levered(150, 0.06), b_hike=levered(150, 0.08))
+
+    # 发债 30 亿元：EV 100、净负债 20、股权 80
+    issuance = [
+        dict(name="发债前", ev=100, nd=20, note=""),
+        dict(name="钱留在账上", ev=100, nd=20, note=""),
+        dict(name="分红或回购", ev=100, nd=50, note="股东另得 30"),
+        dict(name="投好项目", ev=100 + 30 + 5, nd=50, note="项目值 35"),
+        dict(name="投坏项目", ev=100 + 30 - 8, nd=50, note="项目值 22"),
+    ]
+    for x in issuance:
+        x["equity"] = x["ev"] - x["nd"]
+
+    # PE 相同的两家公司：市值 200、净利润 10；B 有 100 亿元净负债、利率 5%
+    def same_pe(net_debt, rate=0.05, da=5 / 3):
+        ni, mcap = 10.0, 200.0
+        interest = net_debt * rate
+        e = ni / (1 - TAX) + interest + da
+        return dict(mcap=mcap, ni=ni, pe=mcap / ni, net_debt=net_debt, interest=interest,
+                    ev=mcap + net_debt, ebitda=e, ev_ebitda=(mcap + net_debt) / e, nd_ebitda=net_debt / e)
+
+    same = dict(a=same_pe(0), b=same_pe(100))
+
+    # 归一化 EBITDA 与 FDD（某连锁餐饮公司，万元）
+    adjustments = [
+        ("剔除一次性政府补助", -800), ("剔除出售门店物业的收益", -500),
+        ("加回一次性诉讼和解费", 200), ("加回关店重组费用", 300),
+        ("老板薪酬调到市场水平", -300), ("关联方租金调到市价", -200),
+        ("补足每年少缴的社保公积金", -200),
+    ]
+    reported = 12000
+    normalized = reported + sum(v for _, v in adjustments)
+    multiple, net_debt, debt_like = 10, 1.0, 0.3
+    fdd = dict(reported=reported, normalized=normalized, adjustments=adjustments, multiple=multiple,
+               net_debt=net_debt, debt_like=debt_like,
+               ev_before=reported / 1e4 * multiple, ev_after=normalized / 1e4 * multiple,
+               ask=reported / 1e4 * multiple - net_debt,
+               after=normalized / 1e4 * multiple - net_debt - debt_like)
+    return dict(leverage=leverage, issuance=issuance, same_pe=same, fdd=fdd)
+
+
 def main():
     rows = forecast()
     base = dcf(rows)
@@ -94,6 +148,7 @@ def main():
         reinvest=reinvest, implied_roic=G / reinvest,
         implied_exit_multiple=base["tv"] / rows[-1]["ebitda"],
         growth_for_comps=growth_for_comps, tv_not_discounted=tv_not_discounted, weighted=weighted,
+        adv=advanced_examples(),
     )
 
     print(f"Ke = {ke:.2%}, WACC = {wacc_calc:.3%}（取 {WACC:.1%}）")
@@ -115,6 +170,23 @@ def main():
     print("敏感性（每股，元）：")
     for w, line in zip(waccs, sens):
         print(f"  WACC {w:.1%}: " + "  ".join(f"{v:5.2f}" for v in line))
+
+    adv = out["adv"]
+    lv = adv["leverage"]
+    print("—— 进阶六问 ——")
+    for k in ("a", "b", "b_hike"):
+        x = lv[k]
+        print(f"杠杆示例 {k}: 净负债 {x['net_debt']:.0f} 利息 {x['interest']:.1f} 净利润 {x['ni']:.2f} "
+              f"市值 {x['mcap']:.0f} PE {x['pe']:.1f}x EV/EBITDA {x['ev_ebitda']:.1f}x 净负债/EBITDA {x['nd_ebitda']:.1f}x")
+    print(f"加息后 B 净利润变化 {lv['b_hike']['ni'] / lv['b']['ni'] - 1:.1%}，利息保障倍数 {lv['b']['coverage']:.1f}x")
+    for x in adv["issuance"]:
+        print(f"发债 {x['name']}: EV {x['ev']} 净负债 {x['nd']} 股权 {x['equity']}")
+    for k, x in adv["same_pe"].items():
+        print(f"同 PE {k}: EV {x['ev']:.0f} EBITDA {x['ebitda']:.2f} EV/EBITDA {x['ev_ebitda']:.2f}x 净负债/EBITDA {x['nd_ebitda']:.1f}x")
+    f = adv["fdd"]
+    print(f"归一化 EBITDA {f['reported']} → {f['normalized']} 万元（{f['normalized'] / f['reported'] - 1:.1%}），"
+          f"EV {f['ev_before']:.1f} → {f['ev_after']:.1f} 亿元；报价 {f['ask']:.1f} → {f['after']:.1f} 亿元"
+          f"（{f['after'] / f['ask'] - 1:.1%}）")
 
     path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "model.json")
     with open(path, "w", encoding="utf-8") as f:
